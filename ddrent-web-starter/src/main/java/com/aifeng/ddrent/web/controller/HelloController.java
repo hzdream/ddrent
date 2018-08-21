@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aifeng.ddrent.core.common.enums.system.ErrorCodeEnum;
-import com.aifeng.ddrent.web.response.commons.BaseResult;
-import com.aifeng.ddrent.web.response.commons.DataContainer;
-import com.aifeng.ddrent.web.response.commons.config.SystemConfig;
+import com.aifeng.ddrent.core.service.TestService;
+import com.aifeng.ddrent.web.response.BaseResult;
+import com.aifeng.ddrent.web.response.DataContainer;
+import com.aifeng.ddrent.web.response.config.SystemConfig;
 
 /** 
  * @ClassName: HelloController
@@ -28,6 +29,9 @@ import com.aifeng.ddrent.web.response.commons.config.SystemConfig;
 public class HelloController extends BaseController {
 	@Autowired
 	SystemConfig sysconfig;
+	
+	@Autowired
+	private TestService testService;
 
 	@RequestMapping
 	public BaseResult<Object> getName() {
@@ -37,5 +41,10 @@ public class HelloController extends BaseController {
 	@RequestMapping(value="conf", method=RequestMethod.GET)
 	public BaseResult<Object> getConfig(){
 		return new BaseResult<>(ErrorCodeEnum.SUCCESS, new DataContainer<>(sysconfig));
+	}
+	
+	@RequestMapping(value="hello", method=RequestMethod.GET)
+	public BaseResult<Object> helloService(){
+		return new BaseResult<>(ErrorCodeEnum.SUCCESS, new DataContainer<>(testService.hello()));
 	}
 }

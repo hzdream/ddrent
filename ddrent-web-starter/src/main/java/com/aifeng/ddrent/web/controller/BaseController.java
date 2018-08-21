@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aifeng.ddrent.core.common.enums.system.ErrorCodeEnum;
-import com.aifeng.ddrent.web.response.commons.BaseResult;
-import com.aifeng.ddrent.web.response.commons.SessionInfo;
+import com.aifeng.ddrent.web.response.BaseResult;
+import com.aifeng.ddrent.web.response.SessionInfo;
 
 /** 
  * @ClassName: BaseController 
@@ -342,4 +342,5 @@ public class BaseController {
 	public SessionInfo getSessionInfo() {
 		return (SessionInfo) request.getSession().getAttribute(SessionInfo.SESSION_NAME);
 	}
+	
 }
