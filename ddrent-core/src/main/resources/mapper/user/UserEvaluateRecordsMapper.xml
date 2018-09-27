@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.user.UserEvaluateRecordsMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.user.UserEvaluateRecordsDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="EVALUATE_ORGIN_ID" property="evaluateOrginId" jdbcType="INTEGER" />
+    <result column="EVALUATE_TARGET_ID" property="evaluateTargetId" jdbcType="INTEGER" />
+    <result column="EVALUATE_SCORE" property="evaluateScore" jdbcType="INTEGER" />
+    <result column="IMAGE_URLS" property="imageUrls" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="REMARKS_" property="remarks" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

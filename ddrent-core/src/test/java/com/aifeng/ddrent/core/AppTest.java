@@ -20,6 +20,7 @@ public class AppTest
     public AppTest( String testName )
     {
         super( testName );
+        System.out.println(testName);
         StringUtils.isNotBlank("");
     }
 

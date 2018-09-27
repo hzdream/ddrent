@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.auth.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.auth.UserDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="ORIGIN_OPEN_ID" property="originOpenId" jdbcType="VARCHAR" />
+    <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+    <result column="ORIGIN_" property="origin" jdbcType="VARCHAR" />
+    <result column="PHONE_NUM" property="phoneNum" jdbcType="VARCHAR" />
+    <result column="CONTACT_PROTECT" property="contactProtect" jdbcType="INTEGER" />
+    <result column="IS_ACTIVE" property="isActive" jdbcType="INTEGER" />
+    <result column="LAST_LOGIN_TIME" property="lastLoginTime" jdbcType="TIMESTAMP" />
+    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
+    <result column="PASSWORD_" property="password" jdbcType="VARCHAR" />
+    <result column="INTRODUCE_" property="introduce" jdbcType="VARCHAR" />
+    <result column="HEAD_IMG_URL" property="headImgUrl" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="SEX_" property="sex" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

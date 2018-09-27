@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.auth.ResourcesMapper">
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.auth.ResourcesDO">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="RES_NAME" jdbcType="VARCHAR" property="resName" />
+    <result column="RES_LEVEL" jdbcType="INTEGER" property="resLevel" />
+    <result column="PRE_RES_ID" jdbcType="INTEGER" property="preResId" />
+    <result column="RES_URI" jdbcType="VARCHAR" property="resUri" />
+    <result column="RES_ICON" jdbcType="VARCHAR" property="resIcon" />
+    <result column="RES_SORT_CODE" jdbcType="INTEGER" property="resSortCode" />
+    <result column="RES_TYPE" jdbcType="INTEGER" property="resType" />
+    <result column="IS_ACTIVE" jdbcType="INTEGER" property="isActive" />
+    <result column="RES_STRUCTURE" jdbcType="VARCHAR" property="resStructure" />
+    <result column="TYPE_" jdbcType="INTEGER" property="type" />
+    <result column="DISPLAY_TYPE" jdbcType="INTEGER" property="displayType" />
+    <result column="METHOD_TYPE" jdbcType="INTEGER" property="methodType" />
+    <result column="RES_URI_TYPE" jdbcType="INTEGER" property="resUriType" />
+    <result column="RES_USE_TYPE" jdbcType="VARCHAR" property="resUseType" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+</mapper>

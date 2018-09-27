@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.user.FollowRecordsMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.user.FollowRecordsDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="FOLLOW_ORIGIN_ID" property="followOriginId" jdbcType="INTEGER" />
+    <result column="CONTACT_TARGET_ID" property="contactTargetId" jdbcType="INTEGER" />
+    <result column="FOLLOW_TYPE" property="followType" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="SNAPSHOT_" property="snapshot" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

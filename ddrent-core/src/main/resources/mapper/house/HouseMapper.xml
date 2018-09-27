@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.house.HouseMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.house.HouseDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR" />
+    <result column="ROOM_NUMBER" property="roomNumber" jdbcType="VARCHAR" />
+    <result column="ROOM_TYPE" property="roomType" jdbcType="VARCHAR" />
+    <result column="ROOM_ACREAGE" property="roomAcreage" jdbcType="REAL" />
+    <result column="HOUSE_FLOOR" property="houseFloor" jdbcType="INTEGER" />
+    <result column="ROOM_ORIENTATION" property="roomOrientation" jdbcType="VARCHAR" />
+    <result column="HOUSE_FLOOR_TOTAL" property="houseFloorTotal" jdbcType="INTEGER" />
+    <result column="HOUSE_TOTAL_ACREAGE" property="houseTotalAcreage" jdbcType="REAL" />
+    <result column="HOUSE_TYPE" property="houseType" jdbcType="VARCHAR" />
+    <result column="HOSE_TOTAL_ROOM" property="hoseTotalRoom" jdbcType="INTEGER" />
+    <result column="RENT_TYPE" property="rentType" jdbcType="VARCHAR" />
+    <result column="HOUSE_FITMENT" property="houseFitment" jdbcType="VARCHAR" />
+    <result column="ESTATE_ID" property="estateId" jdbcType="INTEGER" />
+    <result column="ESTATE_NAME" property="estateName" jdbcType="VARCHAR" />
+    <result column="ADDRESS_" property="address" jdbcType="VARCHAR" />
+    <result column="COORDINATE_" property="coordinate" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION_" property="description" jdbcType="VARCHAR" />
+    <result column="CREATOR_" property="creator" jdbcType="VARCHAR" />
+    <result column="CREATOR_ID" property="creatorId" jdbcType="INTEGER" />
+    <result column="CREATOR_TYPE" property="creatorType" jdbcType="VARCHAR" />
+    <result column="CREATOR_APPELLATION" property="creatorAppellation" jdbcType="VARCHAR" />
+    <result column="CONTACT_PHONE" property="contactPhone" jdbcType="VARCHAR" />
+    <result column="PAYMENT_TYPE" property="paymentType" jdbcType="VARCHAR" />
+    <result column="AGENCY_FEE" property="agencyFee" jdbcType="INTEGER" />
+    <result column="AGENCY_FEE_TYPE" property="agencyFeeType" jdbcType="VARCHAR" />
+    <result column="SHOW_TYPE" property="showType" jdbcType="VARCHAR" />
+    <result column="IS_ON_SHELF" property="isOnShelf" jdbcType="INTEGER" />
+    <result column="IS_RELEASE" property="isRelease" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>

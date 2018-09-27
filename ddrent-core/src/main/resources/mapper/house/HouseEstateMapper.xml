@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.house.HouseEstateMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.house.HouseEstateDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR" />
+    <result column="ESATE_CODE" property="esateCode" jdbcType="VARCHAR" />
+    <result column="COORDINATE_" property="coordinate" jdbcType="VARCHAR" />
+    <result column="ADDRESS_" property="address" jdbcType="VARCHAR" />
+    <result column="CREATOR_" property="creator" jdbcType="VARCHAR" />
+    <result column="CREATOR_ID" property="creatorId" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>

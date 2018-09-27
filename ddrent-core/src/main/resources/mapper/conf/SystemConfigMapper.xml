@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.conf.SystemConfigDOMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.conf.SystemConfigDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="PRE_FIX_KEY" property="preFixKey" jdbcType="VARCHAR" />
+    <result column="KEY_" property="key" jdbcType="VARCHAR" />
+    <result column="VALUE_" property="value" jdbcType="VARCHAR" />
+    <result column="IS_ACTIVE" property="isActive" jdbcType="INTEGER" />
+    <result column="EX_VALUE1" property="exValue1" jdbcType="VARCHAR" />
+    <result column="EX_VALUE2" property="exValue2" jdbcType="VARCHAR" />
+    <result column="EX_VALUE3" property="exValue3" jdbcType="VARCHAR" />
+    <result column="SNAPSHOT_" property="snapshot" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION_" property="description" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="IS_ENCODE" property="isEncode" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

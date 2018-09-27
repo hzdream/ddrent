@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo
+	http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
+	<!-- Application name -->
+	<!-- <dubbo:application name="${dubbo.application.name}" /> -->
+	<!-- registry address, used for service to register itself -->
+	<!-- <dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}" /> -->
+	<!--<dubbo:registry protocol="zookeeper" address="192.168.10.11:2181" />-->
+	<!-- <dubbo:protocol name="${dubbo.protocol.name}" port="${dubbo.protocol.port}" /> -->
+	
+</beans>

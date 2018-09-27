@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.captcha.CaptchaMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.captcha.CaptchaDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="TO_" property="to" jdbcType="VARCHAR" />
+    <result column="CAPTCHA_" property="captcha" jdbcType="VARCHAR" />
+    <result column="IS_ACTIVE" property="isActive" jdbcType="BIT" />
+    <result column="TIMES_CHECK" property="timesCheck" jdbcType="INTEGER" />
+    <result column="BUSI_TYPE" property="busiType" jdbcType="VARCHAR" />
+    <result column="EXTRA_" property="extra" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="CAPTCHA_TYPE" property="captchaType" jdbcType="INTEGER" />
+    <result column="DELAY_MINUTES" property="delayMinutes" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>
