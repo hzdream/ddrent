@@ -17,20 +17,26 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.PropertiesEditor;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.aifeng.ddrent.core.common.enums.system.ErrorCodeEnum;
-import com.aifeng.ddrent.web.response.BaseResult;
-import com.aifeng.ddrent.web.response.SessionInfo;
+import com.aifeng.ddrent.common.enums.system.ErrorCodeEnum;
+import com.aifeng.ddrent.common.exception.CoreException;
+import com.aifeng.ddrent.common.exception.auth.OAuth2Exception;
+import com.aifeng.ddrent.common.exception.auth.RequestFailedException;
+import com.aifeng.ddrent.common.model.response.BaseResult;
+import com.aifeng.ddrent.web.response.commons.SessionInfo;
 
 /** 
  * @ClassName: BaseController 
@@ -39,13 +45,13 @@ import com.aifeng.ddrent.web.response.SessionInfo;
  * @date: 2018年8月13日 下午2:42:51  
  */
 public class BaseController {
-	final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	HttpServletRequest request;
+	protected HttpServletRequest request;
 	
 	@Autowired
-	HttpServletResponse response;
+	protected HttpServletResponse response;
 	
 	/**
 	 * 异常统一处理
@@ -55,12 +61,27 @@ public class BaseController {
 	 */
 	@ExceptionHandler
 	public @ResponseBody Object exceptionHandler(HttpServletRequest request, Exception ex) {
-		logger.error("遇到一个异常", ex);
-		BaseResult<Object> result = new BaseResult<>(ErrorCodeEnum.SYSTEM_ERROR, ex.getMessage());
-		if(ex instanceof RuntimeException) {
+		
+		BaseResult<Object> result = null;
+		
+		if(ex instanceof CoreException) {
+			result = new BaseResult<>(((CoreException)ex).getCode(), ex.getMessage());
+			logger.error("[{}]服务遇到一个基础服务异常, 异常状态码{}, 异常原因{}", request.getRequestURI(),
+					((CoreException)ex).getCode().code(), ex.getMessage());
 			
+			//AuthException 需要设置状态码
+			if(ex instanceof OAuth2Exception) {
+				response.setStatus(((OAuth2Exception)ex).getHttpCode());
+			}
+		}else {
+			int status = response.getStatus();
+			if(0 == status)
+			response.setStatus(500);
+			
+			result = new BaseResult<>(ErrorCodeEnum.UNKNOW_SYSTEM_ERROR);
+			logger.error("[{}]服务遇到一个基础服务异常, 异常状态码{}, 异常原因{}", request.getRequestURI(), ex.getMessage());
 		}
-		request.setAttribute("ex", ex.getMessage());
+		
 		return result;
 	}
 	
@@ -88,6 +109,33 @@ public class BaseController {
 	
 	/**
 	 * 
+	 * @ClassName: NumberEditor 
+	 * @Description: number 编辑器
+	 * @author: imart·deng
+	 * @date: 2018年8月13日 下午5:18:13
+	 */
+	public class NumberEditor extends PropertiesEditor{
+		@Override    
+		public void setAsText(String text) throws IllegalArgumentException {    
+			if (text == null || text.equals("")) {    
+				text = null;    
+			}else {
+				try {
+					setValue(NumberUtils.createNumber(text));
+				} catch (NumberFormatException e) {
+					logger.debug("[json 反序列化] 失败，json原值{}", text);
+				}
+			}
+		}
+		
+		@Override    
+		public String getAsText() {    
+			return getValue().toString();    
+		}
+	}
+	
+	/**
+	 * 
 	 * @ClassName: IntegerEditor 
 	 * @Description: int 编辑器
 	 * @author: imart·deng
@@ -97,7 +145,7 @@ public class BaseController {
 		@Override    
 	    public void setAsText(String text) throws IllegalArgumentException {    
 	        if (text == null || text.equals("")) {    
-	            text = "0";    
+	            text = null;    
 	        }    
 	        setValue(Integer.parseInt(text));    
 	    } 
@@ -246,11 +294,14 @@ public class BaseController {
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(Date.class, new MyDateEditor(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), true));
-		binder.registerCustomEditor(int.class, new IntegerEditor());
-		binder.registerCustomEditor(long.class, new LongEditor());
-		binder.registerCustomEditor(double.class, new DoubleEditor());
-		binder.registerCustomEditor(float.class, new FloatEditor());
-		
+		binder.registerCustomEditor(int.class, new NumberEditor());
+		binder.registerCustomEditor(Integer.class, new NumberEditor());
+		binder.registerCustomEditor(long.class, new NumberEditor());
+		binder.registerCustomEditor(Long.class, new NumberEditor());
+		binder.registerCustomEditor(double.class, new NumberEditor());
+		binder.registerCustomEditor(Double.class, new NumberEditor());
+		binder.registerCustomEditor(float.class, new NumberEditor());
+		binder.registerCustomEditor(Float.class, new NumberEditor());
 	}
 	
 	/**
@@ -341,6 +392,12 @@ public class BaseController {
 	 */
 	public SessionInfo getSessionInfo() {
 		return (SessionInfo) request.getSession().getAttribute(SessionInfo.SESSION_NAME);
+	}
+	
+	protected void validte(BindingResult bdResult) throws RequestFailedException {
+		for (ObjectError error : bdResult.getAllErrors()) {
+			throw new RequestFailedException(ErrorCodeEnum.PARAMS_ERROR, error.getDefaultMessage());
+		}
 	}
 	
 }

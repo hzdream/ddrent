@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	    <groupId>com.aifeng</groupId>
+	    <artifactId>ddrent</artifactId>
+	    <version>0.0.1-SNAPSHOT</version>
+	  </parent>
+
+	<artifactId>ddrent-deploy</artifactId>
+	<name>ddrent-deploy</name>
+	<packaging>pom</packaging>
+	
+	<dependencies>
+		<!-- 应用依赖 -->
+		<dependency>
+			<groupId>com.aifeng</groupId>
+			<artifactId>ddrent-web-starter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<finalName>ddrent</finalName>
+		<resources>
+			<resource>
+				<!-- 使用指定环境的资源目录 -->
+				<directory>src/main/resources/${profiles.active}</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>release-all</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<descriptors>
+								<descriptor>release.xml</descriptor>
+							</descriptors>
+							<appendAssemblyId>true</appendAssemblyId>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<profiles>
+		<profile>
+			<!-- 本地环境 -->
+			<id>DEVELOP</id>
+			<properties>
+				<profiles.active>DEVELOP</profiles.active>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<!-- 测试环境 -->
+			<id>TEST</id>
+			<properties>
+				<profiles.active>TEST</profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<!-- 苏州生产环境 -->
+			<id>PRODUCT-SZ</id>
+			<properties>
+				<profiles.active>PRODUCT-SZ</profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<!-- 杭州生产环境 -->
+			<id>PRODUCT-HZ</id>
+			<properties>
+				<profiles.active>PRODUCT-HZ</profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<!-- UAT环境 -->
+			<id>UAT</id>
+			<properties>
+				<profiles.active>UAT</profiles.active>
+			</properties>
+		</profile>
+	</profiles>
+</project>
