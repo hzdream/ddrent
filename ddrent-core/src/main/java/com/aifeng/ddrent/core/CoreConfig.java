@@ -7,15 +7,58 @@
  */
 package com.aifeng.ddrent.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+
+import com.aifeng.ddrent.common.model.response.BaseResult;
+import com.aifeng.ddrent.common.util.data.JwtUtil;
+import com.aifeng.ddrent.core.common.model.PageBean;
+import com.aifeng.ddrent.core.common.utils.conf.SystemConfigManager;
+import com.aifeng.ddrent.core.dao.model.conf.SystemConfigDO;
+import com.aifeng.ddrent.core.service.conf.SystemConfigService;
 
 /** 
  * @ClassName: CoreConfig 
- * @Description: TODO
+ * @Description: 基础服务配置
  * @author: imart·deng
  * @date: 2018年8月13日 下午11:52:47  
  */
 @EnableConfigurationProperties
 public class CoreConfig {
-
+	@Autowired 
+	SystemConfigService systemConfigService;
+	
+	/**
+	 * 加载系统配置
+	 * @param systemConfigService
+	 * @return
+	 */
+	@Bean
+	public SystemConfigManager getSystemConfig() {
+		
+		SystemConfigManager systemConfigManager = new SystemConfigManager();
+		
+		SystemConfigDO systemConfigParams = new SystemConfigDO();
+		systemConfigParams.setIsActive(true);
+		
+		PageBean page = new PageBean(PageBean.MIN_PAGE, PageBean.MAX_ROWS);
+		
+		BaseResult<SystemConfigDO> systemConfigResult = systemConfigService.findByParams(systemConfigParams, page);
+		
+		systemConfigManager.init(systemConfigResult.getData().getRows());
+		
+		return systemConfigManager;
+	}
+	
+	/**
+	 * 初始化JWT 工具
+	 * @return
+	 */
+	@Bean
+	public JwtUtil jwtUtil() {
+		//设置 jwt 默认密码
+		JwtUtil.init(getSystemConfig().getJwtSecretKey());
+		return new JwtUtil();
+	}
 }

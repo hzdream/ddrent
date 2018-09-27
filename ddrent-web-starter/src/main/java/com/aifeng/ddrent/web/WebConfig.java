@@ -7,8 +7,22 @@
  */
 package com.aifeng.ddrent.web;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import org.hibernate.validator.HibernateValidator;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -29,5 +43,49 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addViewController("").setViewName("/welcome");
 		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 	}
-
+	
+	/**
+	 * 添加hibernate 校验工具
+	 * 
+	 * @return
+	 */
+	@Bean
+	public Validator validator() {
+		return Validation.byProvider(HibernateValidator.class).configure()
+				// 快速失败模式
+				.addProperty("hibernate.validator.fail_fast", "true").buildValidatorFactory().getValidator();
+	}
+	
+	/**
+	 * 跨域过滤器
+	 * @return
+	 */
+	@Bean
+	public FilterRegistrationBean<CorsFilter> corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", buildConfig()); // 4
+		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(source));
+		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return bean;
+	}
+	private CorsConfiguration buildConfig() {
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL); // 1
+		corsConfiguration.setAllowCredentials(true);
+		corsConfiguration.addAllowedHeader(CorsConfiguration.ALL); // 2
+		corsConfiguration.addAllowedMethod(CorsConfiguration.ALL); // 3
+		corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Cookie"));
+		corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
+		return corsConfiguration;
+	}
+	
+	@Bean
+	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+		return new Jackson2ObjectMapperBuilderCustomizer() {
+			@Override
+			public void customize(Jackson2ObjectMapperBuilder builder) {
+				builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+			}
+		};
+	}
 }

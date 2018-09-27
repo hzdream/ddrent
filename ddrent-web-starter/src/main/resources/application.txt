@@ -1,0 +1,38 @@
+server:
+ port: 8080
+ context-path: /
+spring:
+ profiles:
+  active: dev
+logging:
+    level:
+        tk.mybatis: TRACE
+druid:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123abc
+    initial-size: 1
+    min-idle: 1
+    max-active: 20
+    test-on-borrow: true
+spring:
+    mvc:
+        view:
+            prefix: /templates/
+            suffix: .ftl
+    freemarker:
+        cache: false
+        request-context-attribute: request
+mybatis:
+    type-aliases-package: tk.mybatis.springboot.model
+    mapper-locations: classpath:mapper/**/*.xml
+mapper:
+    mappers:
+        - tk.mybatis.springboot.util.MyMapper
+    not-empty: false
+    identity: MYSQL
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+params: count=countSql

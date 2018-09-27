@@ -1,5 +1,7 @@
 package com.aifeng.ddrent.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -18,6 +20,7 @@ public class AppTest
     public AppTest( String testName )
     {
         super( testName );
+        StringUtils.isNotBlank("");
     }
 
     /**
