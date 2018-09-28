@@ -7,6 +7,7 @@
  */
 package com.aifeng.ddrent.core.common.utils.conf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class SystemConfigManager {
 	private static final Logger logger = LoggerFactory.getLogger(SystemConfigManager.class);
 
 	/** 配置项容器  */
-	private static Map<String, Map<String, SystemConfigDO>> prefixProperties;
+	private static Map<String, Map<String, SystemConfigDO>> prefixProperties = new HashMap<>();
 	
 	/** 全匹配容器配置项容器  */
 	private static Map<String, SystemConfigDO> fullKeyProperties;
@@ -71,6 +72,8 @@ public class SystemConfigManager {
 				prefixProperties = new HashMap<>(systemConfigLis.size());
 				fullKeyProperties = new HashMap<>(systemConfigLis.size());
 			}
+			
+			prefixLis = new ArrayList<>(systemConfigLis.size());
 			
 			String prefix = null;
 			Map<String, SystemConfigDO> childMap = null;
@@ -216,9 +219,19 @@ public class SystemConfigManager {
 
 	public static final String JWT_SECRET_KEY = "jwt.hmacal.key";
 	/**
+	 * 获取jwt 密钥
 	 * @return
 	 */
 	public String getJwtSecretKey() {
 		return getSystemConfigValue(JWT_SECRET_KEY);
+	}
+	
+	public static final String SYS_AES_KEY = "aes.key";
+	/**
+	 * 获取AES 密钥
+	 * @return
+	 */
+	public String getAESKey() {
+		return getSystemConfigValue(SYS_AES_KEY);
 	}
 }

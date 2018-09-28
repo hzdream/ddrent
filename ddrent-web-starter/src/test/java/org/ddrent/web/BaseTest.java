@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.aifeng.ddrent.core.CoreConfig;
+
 /** 
  * @ClassName: BaseTest 
  * @Description: 基础测试
@@ -20,9 +22,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @date: 2018年9月17日 下午8:10:23  
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=CoreConfig.class)
 public class BaseTest {
 	
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+	
 }

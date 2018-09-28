@@ -41,7 +41,10 @@ public class RoleDO implements BaseDOI {
 
     @Column(name = "UPDATE_TIME")
     private Date updateTime;
-
+    
+    @Column(name = "ROLE_CODE")
+    private String roleCode;
+    
     /**
      * @return ID
      */

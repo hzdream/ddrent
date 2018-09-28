@@ -83,7 +83,7 @@ public class SequenceGeneratorUtil {
 		
 		System.out.format("%12s|%12s\r\n", "第几个", "序列号");
 		
-		for(int i = 0; i< 1 ;) {
+		for(int i = 0; i< 10 ;) {
 			System.out.format("%12d|%12s\r\n", ++i, nextId());
 		}
 	}

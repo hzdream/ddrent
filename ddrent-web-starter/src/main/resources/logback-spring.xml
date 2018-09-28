@@ -35,12 +35,12 @@
 	
 	<logger name="com.baidu.disconf" level="INFO" />  
 	
-	<logger name="org.apache.ibatis" level="DEBUG">
+	<!-- <logger name="org.apache.ibatis" level="DEBUG">
 		<appender-ref ref="STDOUT"/>
 	</logger>
 	<logger name="java.sql" level="debug">
 		<appender-ref ref="STDOUT"/>
-	</logger>
+	</logger> -->
 	
 	<springProfile name="!online">
 		<logger name="org.springframework" level="INFO" />  

@@ -41,7 +41,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.aifeng</groupId>
 			<artifactId>ddrent-api</artifactId>
@@ -80,5 +80,22 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
+		<!-- mongodb dependency -->
+		<!-- <dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+		</dependency> -->
 	</dependencies>
+	
+	<!-- spring boot mongodb -->
+	<!-- <repositories>
+		<repository>
+			<id>spring-libs-release</id>
+			<name>Spring Releases</name>
+			<url>https://repo.spring.io/libs-release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories> -->
 </project>

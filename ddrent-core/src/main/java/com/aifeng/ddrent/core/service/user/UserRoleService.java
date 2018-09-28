@@ -9,9 +9,12 @@ package com.aifeng.ddrent.core.service.user;
 
 import org.springframework.stereotype.Service;
 
+import com.aifeng.ddrent.common.model.response.BaseResult;
 import com.aifeng.ddrent.core.dao.mapper.auth.UserRoleMapper;
 import com.aifeng.ddrent.core.dao.model.auth.UserRoleDO;
 import com.aifeng.ddrent.core.service.BaseService;
+
+import tk.mybatis.mapper.entity.Example;
 
 /** 
  * @ClassName: UserRoleService 
@@ -21,4 +24,17 @@ import com.aifeng.ddrent.core.service.BaseService;
  */
 @Service
 public class UserRoleService extends BaseService<UserRoleDO, UserRoleMapper> {
+
+	/**
+	 * 根据用户编号获取用户角色信息
+	 * @param id
+	 */
+	public BaseResult<UserRoleDO> findByUserId(Long userId) {
+		if(null != userId) {
+			Example example = new Example(UserRoleDO.class);
+			example.createCriteria().andEqualTo("userId", userId);
+			return findByExample(example, null);
+		}
+		return null;
+	}
 }

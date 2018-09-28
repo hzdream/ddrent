@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
@@ -28,6 +29,7 @@ import com.aifeng.ddrent.core.common.model.PageBean;
 import com.aifeng.ddrent.core.dao.model.BaseDOI;
 
 import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.entity.Example;
 
 /** 
  * @ClassName: BaseService 
@@ -46,12 +48,17 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	/**
 	 * 默认分页起始位
 	 */
-	private final static int DEFAULT_PAGE = 1;
+	protected final static int DEFAULT_PAGE = 1;
+
+	/**
+	 * 1
+	 */
+	protected final static int ONE = 1;
 	
 	/**
 	 * 默认分页大小
 	 */
-	private final static int DEFAULT_ROWS = 10;
+	protected final static int DEFAULT_ROWS = 10;
 	
 	/** 日志参数和消息划分 */
 	protected final static String lOGGER_DIVIDE = "_";
@@ -145,7 +152,7 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	}
 	
 	/**
-	 * 根据查询调教获取 
+	 * 根据查询条件获取 
 	 * <li>&nbsp;&nbsp;<strong>PS:</strong>&nbsp;&nbsp;params 对象不能为空，否则丢出异常</li>
 	 * @param params	查询参数
 	 * @param page		分页对象
@@ -162,13 +169,73 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	}
 	
 	/**
+	 * 根据查询条件获取 单个对象
+	 * <li>&nbsp;&nbsp;<strong>PS:</strong>&nbsp;&nbsp;params 对象不能为空，否则丢出异常</li>
+	 * @param params	查询参数
+	 * @param page		分页对象
+	 */
+	public T getByParams(T params){
+		assert null != params : "params can't be null.";
+		
+		// 如果分页对象不存在，设置默认分页
+		PageBean page = new PageBean(DEFAULT_PAGE, ONE);
+		
+		List<T> list = getMapper().selectByRowBounds(params, page.toRowBounds());
+		
+		if(null != list && !list.isEmpty()) {
+			return list.get(0);
+		}else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 根据查询条件获取对象
+	 * <li>&nbsp;&nbsp;<strong>PS:</strong>&nbsp;&nbsp;example 对象不能为空，否则丢出异常</li>
+	 * @param example	查询参数
+	 * @param page		分页对象
+	 */
+	public BaseResult<T> findByExample(Example example, PageBean page){
+		assert null != example : "params can't be null.";
+		
+		// 如果分页对象不存在，设置默认分页
+		if(null == page) page = new PageBean(DEFAULT_PAGE, DEFAULT_ROWS);
+		
+		List<T> list = getMapper().selectByExampleAndRowBounds(example, page.toRowBounds());
+		
+		return new BaseResult<>(ErrorCodeEnum.SUCCESS, new DataContainer<>(list, getMapper().selectCountByExample(example)));
+	}
+	
+	/**
+	 * 根据查询条件获取单个对象
+	 * <li>&nbsp;&nbsp;<strong>PS:</strong>&nbsp;&nbsp;example 对象不能为空，否则丢出异常</li>
+	 * @param example	查询参数
+	 * @param page		分页对象
+	 */
+	public T getByExample(Example example){
+		assert null != example : "params can't be null.";
+		
+		// 如果分页对象不存在，设置默认分页
+		PageBean page = new PageBean(DEFAULT_PAGE, ONE);
+		
+		List<T> list = getMapper().selectByExampleAndRowBounds(example, page.toRowBounds());
+		
+		if(null != list && !list.isEmpty()) {
+			return list.get(0);
+		}else {
+			return null;
+		}
+		
+	}
+	
+	/**
 	 * 根据id更新所有字段
 	 *   <li>&nbsp;&nbsp;<strong>PS:</strong>&nbsp;更新所有字段</li>
 	 *   <li>&nbsp;&nbsp;成功返回record 对象， 失败返回null对象。</li>
 	 * @param record	需要更新的记录
 	 * @return
 	 */
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRED)
 	public T updateById(T record) {
 		if(null == record) return null;
 		
@@ -195,7 +262,7 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	 * @param record	需要更新的记录
 	 * @return
 	 */
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRED)
 	public T updateByIdSelective(T record) {
 		if(null == record) return null;
 		
@@ -223,7 +290,7 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	 * @return
 	 * @see tk.mybatis.mapper.common.base.insert#insert()
 	 */
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRED)
 	public T add(T record) {
 		
 		if(null != record) {
@@ -255,7 +322,7 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	 * @return
 	 * @see tk.mybatis.mapper.common.base.insert#insertSelective()
 	 */
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRED)
 	public T addSelective(T record) {
 		
 		if(null != record) {
@@ -284,6 +351,7 @@ public abstract class BaseService<T extends BaseDOI,K extends Mapper<T>> {
 	 * @param id
 	 * @return
 	 */
+	@Transactional(propagation=Propagation.SUPPORTS)
 	public int removeById(Long id) {
 		if(null != id) {
 			try {

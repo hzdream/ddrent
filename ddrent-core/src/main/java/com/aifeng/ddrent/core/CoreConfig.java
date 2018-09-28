@@ -10,6 +10,7 @@ package com.aifeng.ddrent.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.aifeng.ddrent.common.model.response.BaseResult;
 import com.aifeng.ddrent.common.util.data.JwtUtil;
@@ -25,6 +26,7 @@ import com.aifeng.ddrent.core.service.conf.SystemConfigService;
  * @date: 2018年8月13日 下午11:52:47  
  */
 @EnableConfigurationProperties
+@Configuration
 public class CoreConfig {
 	@Autowired 
 	SystemConfigService systemConfigService;
@@ -37,6 +39,7 @@ public class CoreConfig {
 	@Bean
 	public SystemConfigManager getSystemConfig() {
 		
+		//获取系统配置
 		SystemConfigManager systemConfigManager = new SystemConfigManager();
 		
 		SystemConfigDO systemConfigParams = new SystemConfigDO();
@@ -48,17 +51,9 @@ public class CoreConfig {
 		
 		systemConfigManager.init(systemConfigResult.getData().getRows());
 		
-		return systemConfigManager;
-	}
-	
-	/**
-	 * 初始化JWT 工具
-	 * @return
-	 */
-	@Bean
-	public JwtUtil jwtUtil() {
 		//设置 jwt 默认密码
-		JwtUtil.init(getSystemConfig().getJwtSecretKey());
-		return new JwtUtil();
+		JwtUtil.init(systemConfigManager.getJwtSecretKey());
+		
+		return systemConfigManager;
 	}
 }

@@ -7,19 +7,16 @@
  */
 package com.aifeng.ddrent.web;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
 
 import org.hibernate.validator.HibernateValidator;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -32,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author: imart·deng
  * @date: 2018年8月13日 下午2:40:20  
  */
-@EnableCaching
+@Configuration
 public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
@@ -79,13 +76,13 @@ public class WebConfig implements WebMvcConfigurer {
 		return corsConfiguration;
 	}
 	
-	@Bean
-	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-		return new Jackson2ObjectMapperBuilderCustomizer() {
-			@Override
-			public void customize(Jackson2ObjectMapperBuilder builder) {
-				builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-			}
-		};
-	}
+//	@Bean
+//	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+//		return new Jackson2ObjectMapperBuilderCustomizer() {
+//			@Override
+//			public void customize(Jackson2ObjectMapperBuilder builder) {
+//				builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+//			}
+//		};
+//	}
 }

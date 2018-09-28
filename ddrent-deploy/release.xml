@@ -30,7 +30,7 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>com.aifeng:demo-web-starter</include>
+				<include>com.aifeng:ddrent-web-starter</include>
 			</includes>
 			<binaries>
                 <outputDirectory>lib/</outputDirectory>

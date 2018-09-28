@@ -13,6 +13,8 @@ import com.aifeng.ddrent.core.dao.mapper.auth.RoleMapper;
 import com.aifeng.ddrent.core.dao.model.auth.RoleDO;
 import com.aifeng.ddrent.core.service.BaseService;
 
+import tk.mybatis.mapper.entity.Example;
+
 /** 
  * @ClassName: RoleService 
  * @Description: 角色服务
@@ -21,4 +23,17 @@ import com.aifeng.ddrent.core.service.BaseService;
  */
 @Service
 public class RoleService extends BaseService<RoleDO, RoleMapper> {
+
+	/**
+	 * 根据roleCode获取角色
+	 * @param tourist
+	 * @return
+	 */
+	public RoleDO getByRoleCode(String roleCode) {
+		
+		Example example = new Example(RoleDO.class);
+		example.createCriteria().andEqualTo("roleCode", roleCode);
+		
+		return getByExample(example);
+	}
 }

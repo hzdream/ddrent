@@ -162,5 +162,19 @@ public class BaseResult<T> {
 		}
 		
 	}
+
+	/**
+	 * @param success2
+	 * @param message2
+	 */
+	public void setCode(ErrorCodeEnum errorCode, DataContainer<T> data) {
+		this.data = data;
+		if(null != errorCode) {
+			success = errorCode.isSuccess();
+			this.code = errorCode.code();
+			this.message = errorCode.msg();
+		}
+		
+	}
 	
 }

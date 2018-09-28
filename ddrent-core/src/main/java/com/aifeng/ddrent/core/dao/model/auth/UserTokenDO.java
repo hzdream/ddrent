@@ -51,7 +51,7 @@ public class UserTokenDO implements BaseDOI {
      * 是否激活
      */
     @Column(name = "IS_ACTIVE")
-    private Integer isActive;
+    private Boolean isActive;
 
     /**
      * 创建时间
@@ -186,7 +186,7 @@ public class UserTokenDO implements BaseDOI {
      *
      * @return IS_ACTIVE - 是否激活
      */
-    public Integer getIsActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
@@ -195,7 +195,7 @@ public class UserTokenDO implements BaseDOI {
      *
      * @param isActive 是否激活
      */
-    public void setIsActive(Integer isActive) {
+    public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 

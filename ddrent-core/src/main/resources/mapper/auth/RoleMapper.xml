@@ -12,5 +12,6 @@
     <result column="ROLE_STRUCTURE" jdbcType="VARCHAR" property="roleStructure" />
     <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="ROLE_CODE" jdbcType="VARCHAR" property="roleCode" />
   </resultMap>
 </mapper>

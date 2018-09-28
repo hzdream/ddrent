@@ -14,13 +14,15 @@ package com.aifeng.ddrent.common.enums.auth;
  * @author: imart·deng
  * @date: 2018年9月17日 下午8:43:06  
  */
-public enum UserRoleEnum {
+public enum UserRoleLevelEnum {
 
+	SUPER_MANAGER(0, "超级管理员"),
 	MANAGER(0, "管理员"),
 	TENANT(1, "租客"),
 	AGENT(1, "经纪人"),
 	LANDLORD(1, "房东"),
 	APARTMENT_MANAGER(1, "公寓管理员"),
+	TOURIST(2, "游客"),
 	;
 	
 	private int level;
@@ -31,8 +33,8 @@ public enum UserRoleEnum {
 	 * @param value
 	 * @return
 	 */
-	public static UserRoleEnum getByOrdinal(int value) {
-		for (UserRoleEnum userRole : UserRoleEnum.values()) {
+	public static UserRoleLevelEnum getByOrdinal(int value) {
+		for (UserRoleLevelEnum userRole : UserRoleLevelEnum.values()) {
 			if(userRole.ordinal() == value) {
 				return userRole;
 			}
@@ -44,7 +46,7 @@ public enum UserRoleEnum {
 	 * @param level 角色分级
 	 * @param name	角色名称
 	 */
-	private UserRoleEnum(int level, String name) {
+	private UserRoleLevelEnum(int level, String name) {
 		this.level = level;
 		this.name = name;
 	}
