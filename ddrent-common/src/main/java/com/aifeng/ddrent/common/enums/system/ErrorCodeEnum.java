@@ -22,7 +22,10 @@ public enum ErrorCodeEnum {
 	SYSTEM_ERROR("100002", "系统异常"),
 	SYSTEM_BUSY("100003", "系统繁忙"),
 	UNKNOW_SYSTEM_ERROR("100003", "系统未知异常"),
-	
+
+	// 实体问题
+	INSTANCE_NOT_INIT("101001", "实例没有初始化"),
+
 	//权限问题
 	AUTH_NORIGHT("100011", "请求无权限"),
 	AUTH_LOGIN_TIMEOUT("100012", "登陆超时"),

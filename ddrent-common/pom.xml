@@ -68,5 +68,11 @@
 			<artifactId>okhttp</artifactId>
 		</dependency>
 		
+		<!-- 阿里对象存储服务 -->
+		<!-- <dependency>
+		    <groupId>com.aliyun.oss</groupId>
+		    <artifactId>aliyun-sdk-oss</artifactId>
+		</dependency> -->
+		
 	</dependencies>
 </project>

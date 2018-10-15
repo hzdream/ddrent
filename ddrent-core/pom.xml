@@ -79,7 +79,13 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-
+		
+		<!-- 阿里对象存储服务 -->
+		<dependency>
+		    <groupId>com.aliyun.oss</groupId>
+		    <artifactId>aliyun-sdk-oss</artifactId>
+		</dependency>
+		
 		<!-- mongodb dependency -->
 		<!-- <dependency>
 			<groupId>org.springframework.data</groupId>
