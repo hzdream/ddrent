@@ -72,17 +72,10 @@
 			</properties>
 		</profile>
 		<profile>
-			<!-- 苏州生产环境 -->
-			<id>PRODUCT-SZ</id>
+			<!-- 生产环境 -->
+			<id>PRODUCT</id>
 			<properties>
-				<profiles.active>PRODUCT-SZ</profiles.active>
-			</properties>
-		</profile>
-		<profile>
-			<!-- 杭州生产环境 -->
-			<id>PRODUCT-HZ</id>
-			<properties>
-				<profiles.active>PRODUCT-HZ</profiles.active>
+				<profiles.active>PRODUCT</profiles.active>
 			</properties>
 		</profile>
 		<profile>
