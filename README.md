@@ -1,7 +1,6 @@
 # DDRENT documents
     DDRENT 是一个个人分布式服务项目，基础结构如下：
 ![image](ddrent-deploy.png)
-Format: ![依赖关系](http://github.com/hzdream/ddrent/blob/master/ddrent-deploy.png)
 
     - |-- ddrent
           |-- ddrent-deploy
