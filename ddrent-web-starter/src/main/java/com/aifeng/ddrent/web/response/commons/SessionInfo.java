@@ -31,16 +31,47 @@ public class SessionInfo implements Serializable {
 	private String realName;
 	
 	/** 手机号码 */
-	private String phoneNumber;
+	private String phoneNum;
 	
 	/** 微信openId */
-	private String openId;
+	private String originOpenId;
+
+	/** 用户来源 */
+	private String origin;
+
+	/**
+	 * 电话号码是否保密
+	 */
+	private Boolean contactProtect;
+
+	/**
+	 * 是否激活0、未激活；1、已激活；2、被停用
+	 */
+	private Integer isActive;
+
+	/**
+	 * 登陆账号
+	 */
+	private String loginAccount;
+
+	/**
+	 * 自我介绍
+	 */
+	private String introduce;
+
+	/**
+	 * 头像地址
+	 */
+	private String headImgUrl;
+
+	/** 性别 */
+	private Integer sex;
 	
 	/** 登陆时间 */
 	private Date loginedTime;
-	
-	/** 当前角色信息 */
-	private UserRoleEnum role;
+
+	/** 当前角色列表信息 */
+	private String roles;
 
 	/**
 	 * @return the nickName
@@ -73,29 +104,23 @@ public class SessionInfo implements Serializable {
 	/**
 	 * @return the phoneNumber
 	 */
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getPhoneNum() {
+		return phoneNum;
 	}
 
 	/**
 	 * @param phoneNumber the phoneNumber to set
 	 */
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setPhoneNum(String phoneNumber) {
+		this.phoneNum = phoneNumber;
 	}
 
-	/**
-	 * @return the openId
-	 */
-	public String getOpenId() {
-		return openId;
+	public String getOriginOpenId() {
+		return originOpenId;
 	}
 
-	/**
-	 * @param openId the openId to set
-	 */
-	public void setOpenId(String openId) {
-		this.openId = openId;
+	public void setOriginOpenId(String originOpenId) {
+		this.originOpenId = originOpenId;
 	}
 
 	/**
@@ -112,18 +137,67 @@ public class SessionInfo implements Serializable {
 		this.loginedTime = loginedTime;
 	}
 
-	/**
-	 * @return the role
-	 */
-	public UserRoleEnum getRole() {
-		return role;
+	public String getRoles() {
+		return roles;
 	}
 
-	/**
-	 * @param role the role to set
-	 */
-	public void setRole(UserRoleEnum role) {
-		this.role = role;
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
-	
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public Boolean getContactProtect() {
+		return contactProtect;
+	}
+
+	public void setContactProtect(Boolean contactProtect) {
+		this.contactProtect = contactProtect;
+	}
+
+	public Integer getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Integer isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getLoginAccount() {
+		return loginAccount;
+	}
+
+	public void setLoginAccount(String loginAccount) {
+		this.loginAccount = loginAccount;
+	}
+
+	public String getIntroduce() {
+		return introduce;
+	}
+
+	public void setIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
 }

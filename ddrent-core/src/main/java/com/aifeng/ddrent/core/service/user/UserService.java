@@ -95,7 +95,7 @@ public class UserService extends BaseService<UserDO, UserMapper> {
 					//第三方注册用户
 					
 					//判断用户是否激活用户
-					user.setIsActive(StringUtils.isBlank(user.getPhoneNum()) ? UserActiveEnum.UNACTIVE.ordinal() 
+					user.setIsActive(StringUtils.isBlank(user.getPhoneNum()) ? UserActiveEnum.UNACTIVATED.ordinal()
 							: UserActiveEnum.ACTIVE.ordinal());
 					
 					if(user.getIsActive().equals(UserActiveEnum.ACTIVE.ordinal())) {

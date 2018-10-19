@@ -7,7 +7,9 @@
  */
 package com.aifeng.ddrent.common.enums.auth;
 
-/** 
+import com.aifeng.ddrent.common.util.system.StringUtils;
+
+/**
  * @ClassName: TokenAuthTypeEnum 
  * @Description: token 授权类型
  * @author: imart·deng
@@ -15,6 +17,7 @@ package com.aifeng.ddrent.common.enums.auth;
  */
 public enum TokenAuthTypeEnum {
 
+	COMMON,			//通用配置
 	WEB_LOGIN,		//网页登陆授权
 	WX_LOGIN,		//微信登陆授权
 	;
@@ -27,6 +30,17 @@ public enum TokenAuthTypeEnum {
 	public static TokenAuthTypeEnum getByValue(int value) {
 		for (TokenAuthTypeEnum item : TokenAuthTypeEnum.values()) {
 			if(item.ordinal() == value)
+				return item;
+		}
+		return null;
+	}
+
+	public static TokenAuthTypeEnum getByName(String name){
+
+		if(StringUtils.isBlank(name)) return null;
+
+		for (TokenAuthTypeEnum item : TokenAuthTypeEnum.values()) {
+			if(item.name().equals(name))
 				return item;
 		}
 		return null;

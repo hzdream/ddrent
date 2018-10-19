@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.aifeng.ddrent.common.model.auth.JwtToken;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class JwtUtil {
 	public static final Integer DEFAULT_EXPIR = 120;
 	
 	/** 失效缓冲时间 ，单位：秒*/
-	public static final Integer DEFAULT_EXPIR_LEEWAY = 300;
+	public static final Integer DEFAULT_EXPIR_LEEWAY = 30*60;
 	
 	private static String DEFAULT_HMACAL_KEY = "pgmeFQEU%P&crfa6";
 	
@@ -92,12 +93,21 @@ public class JwtUtil {
 		Date iat = cal.getTime();
 		/** 不早于……时间 */
 		Date nbf = cal.getTime();
-		
+
 		/** 失效时间 */
 		cal.add(Calendar.MINUTE, DEFAULT_EXPIR);
-		Date expir = cal.getTime();
+		Date expire = cal.getTime();
 		
-		return encodeToken(iat, expir, nbf, claims);
+		return encodeToken(iat, expire, nbf, claims);
+	}
+
+	/**
+	 *
+	 * @param jwtToken
+	 * @return
+	 */
+	public static String encodeToken(JwtToken jwtToken){
+		return encodeToken(jwtToken.getClaims());
 	}
 	
 	public static void main(String[] args) {
@@ -157,7 +167,7 @@ public class JwtUtil {
 	}
 	
 	/**
-	 * 默认加密算法验证token有效性
+	 * 默认加密算法验证token有效性，不包括可刷新时间
 	 * @param token
 	 * @return
 	 */
@@ -166,7 +176,7 @@ public class JwtUtil {
 	}
 	
 	/**
-	 * 根据提供的算法，验证token有效性
+	 * 	根据提供的算法，验证token有效性，不包括可刷新时间
 	 * @param token
 	 * @param algorithm
 	 * @return
@@ -176,7 +186,6 @@ public class JwtUtil {
 		try {
 			JWTVerifier verifier = JWT.require(algorithm)
 					.withIssuer(Issuser)
-					.acceptExpiresAt(DEFAULT_EXPIR_LEEWAY)
 					.build();
 			DecodedJWT jwt = verifier.verify(token);
 			
@@ -185,6 +194,29 @@ public class JwtUtil {
 			logger.info("JwtUtil.verify JWT校验不通过:" + exception.getMessage());
 		}
 		
+		return null;
+	}
+
+	/**
+	 * 	是否在允许范围类有效，包括可刷新时间
+	 * @return
+	 */
+	public static DecodedJWT verifyWithinLeeway(String token) {
+		return verifyWithinLeeway(token, getHSAlgorithm(DEFAULT_HMACAL_KEY));
+	}
+
+	public static DecodedJWT verifyWithinLeeway(String token, Algorithm algorithm){
+		try {
+			JWTVerifier verifier = JWT.require(algorithm)
+					.withIssuer(Issuser)
+					.acceptExpiresAt(DEFAULT_EXPIR_LEEWAY)
+					.build();
+			DecodedJWT jwt = verifier.verify(token);
+
+			return jwt;
+		} catch (JWTVerificationException exception){
+			logger.info("[Jwt 有效时间]校验不通过:" + exception.getMessage());
+		}
 		return null;
 	}
 	

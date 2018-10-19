@@ -7,11 +7,15 @@
  */
 package com.aifeng.ddrent.core.service.auth;
 
+import com.aifeng.ddrent.core.dao.model.auth.RoleResourcesViewDO;
 import org.springframework.stereotype.Service;
 
 import com.aifeng.ddrent.core.dao.mapper.auth.RoleResourcesMapper;
 import com.aifeng.ddrent.core.dao.model.auth.RoleResourcesDO;
 import com.aifeng.ddrent.core.service.BaseService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * @ClassName: RoleResourcesService 
@@ -21,4 +25,12 @@ import com.aifeng.ddrent.core.service.BaseService;
  */
 @Service
 public class RoleResourcesService extends BaseService<RoleResourcesDO, RoleResourcesMapper> {
+
+    public List<RoleResourcesViewDO> findRoleResourcesByRoleId(Long roleId){
+        if(null == roleId) return new ArrayList<>(0);
+
+        RoleResourcesDO params = new RoleResourcesDO();
+        params.setRoleId(roleId);
+        return ((RoleResourcesMapper)mapper).selectViewByRoleResouce(params);
+    }
 }

@@ -21,8 +21,8 @@ public class RoleDO implements BaseDOI {
     /**
      * 角色登记0、超级管理员、1租客、2房东、经纪人
      */
-    @Column(name = "ROLE_LEVLE")
-    private Integer roleLevle;
+    @Column(name = "ROLE_LEVEL")
+    private Integer roleLevel;
 
     /**
      * 父级角色
@@ -77,22 +77,20 @@ public class RoleDO implements BaseDOI {
         this.roleName = roleName;
     }
 
-    /**
-     * 获取角色登记0、超级管理员、1租客、2房东、经纪人
-     *
-     * @return ROLE_LEVLE - 角色登记0、超级管理员、1租客、2房东、经纪人
-     */
-    public Integer getRoleLevle() {
-        return roleLevle;
+    public Integer getRoleLevel() {
+        return roleLevel;
     }
 
-    /**
-     * 设置角色登记0、超级管理员、1租客、2房东、经纪人
-     *
-     * @param roleLevle 角色登记0、超级管理员、1租客、2房东、经纪人
-     */
-    public void setRoleLevle(Integer roleLevle) {
-        this.roleLevle = roleLevle;
+    public void setRoleLevel(Integer roleLevel) {
+        this.roleLevel = roleLevel;
+    }
+
+    public String getRoleCode() {
+        return roleCode;
+    }
+
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
     }
 
     /**

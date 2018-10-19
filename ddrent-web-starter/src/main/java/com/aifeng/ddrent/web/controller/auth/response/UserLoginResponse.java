@@ -17,11 +17,6 @@ import java.util.Date;
  */
 public class UserLoginResponse {
 
-	 /**
-     * 主键
-     */
-    private Long id;
-
     /**
      * 昵称
      */
@@ -66,20 +61,6 @@ public class UserLoginResponse {
      * 头像地址
      */
     private String headImgUrl;
-
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the nickName
@@ -206,5 +187,4 @@ public class UserLoginResponse {
 	public void setHeadImgUrl(String headImgUrl) {
 		this.headImgUrl = headImgUrl;
 	}
-    
 }

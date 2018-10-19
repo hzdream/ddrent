@@ -214,6 +214,46 @@ public class AliOSSUtil {
      * 上传文件流
      * @param bucketName    空间名
      * @param key           文件路径
+     * @param isList            文件流对象
+     * @return  true 请求发送成功，false 请求异常
+     */
+    public static boolean uploadStreamByBatch (String bucketName, String key, List<InputStream> isList) {
+
+        if(StringUtils.isBlank(key) || null == isList || isList.isEmpty()) return false;
+//        bucketName = StringUtils.isBlank(bucketName) ? BUCKET_NAME : bucketName;
+
+        OSS client = null;
+        try {
+            client = createOSSClientWithBucket(bucketName);
+
+            for (InputStream is: isList) {
+                client.putObject(bucketName, key, is);
+            }
+            return true;
+        } catch (OSSException oe) {
+            ossExceptionLog(oe, "上传文件", "{\"bucketName\":\"" +
+                    bucketName +
+                    "\",\"key\":\"" +
+                    key +
+                    "\"}");
+        } catch (ClientException ce) {
+            clientExceptionLog(ce, "上传文件", "{\"bucketName\":\"" +
+                    bucketName +
+                    "\",\"key\":\"" +
+                    key +
+                    "\"}");
+        }catch (Exception e){
+            logger.error("[上传文件] 异常， 参数：[{}], 异常原因{}", "", e);
+        }finally {
+            shutdownOSS(client);
+        }
+        return false;
+    }
+
+    /**
+     * 上传文件流
+     * @param bucketName    空间名
+     * @param key           文件路径
      * @param is            文件流对象
      * @return  true 请求发送成功，false 请求异常
      */
@@ -251,6 +291,7 @@ public class AliOSSUtil {
 
     /**
      * 下载文件
+     * <p>PS: 下载文件建议直接createOSSclient之后手动处理，用完之后记得close 流</p>
      * @param key           文件路径
      * @return  InputStream instance or null
      */
@@ -308,6 +349,37 @@ public class AliOSSUtil {
         }
 
         return null;
+    }
+
+    public boolean removeObject(String bucketName, String key){
+        if(StringUtils.isBlank(key)) return false;
+        bucketName = StringUtils.isBlank(bucketName) ? BUCKET_NAME : bucketName;
+
+        OSS client = null;
+        try {
+            client = createOSSClientWithBucket(bucketName);
+
+            client.deleteObject(bucketName, key);
+
+            return true;
+        } catch (OSSException oe) {
+            ossExceptionLog(oe, "删除文件", "{\"bucketName\":\"" +
+                    bucketName +
+                    "\",\"key\":\"" +
+                    key +
+                    "\"}");
+        } catch (ClientException ce) {
+            clientExceptionLog(ce, "删除文件", "{\"bucketName\":\"" +
+                    bucketName +
+                    "\",\"key\":\"" +
+                    key +
+                    "\"}");
+        }catch (Exception e){
+            logger.error("[删除文件] 异常， 参数：[{}], 异常原因{}", "", e);
+        }finally {
+            shutdownOSS(client);
+        }
+        return false;
     }
 
     /**

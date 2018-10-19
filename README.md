@@ -8,7 +8,7 @@
 - dubbo
 
 # 结构如下：
-![image](images/ddrent-deploy.png)
+![image](images/ddrent-deploy.png) [查看原图](https://raw.githubusercontent.com/hzdream/ddrent/master/images/ddrent-deploy.png)
 
     - |-- ddrent
           |-- ddrent-deploy
@@ -17,7 +17,8 @@
                       |-- drent-api
                           |-- ddrent-common
                           
-    api是预留的接口层，common基础公共包，core基础服务和dao层，web是Http Restful Api（没有前端HTML等），deploy 一键打包依赖层（用来发布打包的）
+    api是预留的接口层，common基础公共包，core基础服务和dao层，web是Http Restful Api（没有前端HTML等），
+    deploy 一键打包依赖层（用来发布打包的）
 
 # 配置说明
 ```## spring profiles 

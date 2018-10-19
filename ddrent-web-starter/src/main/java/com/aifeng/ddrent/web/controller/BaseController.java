@@ -14,9 +14,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.aifeng.ddrent.common.constant.session.SessionConstant;
+import com.aifeng.ddrent.web.filter.sessionManager.SessionStatusManager;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +56,9 @@ public class BaseController {
 	
 	@Autowired
 	protected HttpServletResponse response;
+
+	// 用户会话状态信息
+	private SessionStatusManager sessionStatusManager = SessionStatusManager.getInstance();
 	
 	/**
 	 * 异常统一处理
@@ -351,10 +358,9 @@ public class BaseController {
 	
 	/**
 	 * 获取uri完整信息
-	 * @param request
-	 * @return
+	 * @return			全url
 	 */
-	public String getFullUri() {
+	public String getFullUrl() {
 		
 		//用于兼容代理https
 		String scheme = request.getHeader("X-Forwarded-Proto");
@@ -376,7 +382,6 @@ public class BaseController {
 	
 	/**
 	 * 获取请求uri
-	 * @param request
 	 * @return
 	 */
 	public String getUrl() {
@@ -391,13 +396,41 @@ public class BaseController {
 	 * @return
 	 */
 	public SessionInfo getSessionInfo() {
-		return (SessionInfo) request.getSession().getAttribute(SessionInfo.SESSION_NAME);
+		String accessToken = getToken(request);
+		return (SessionInfo) sessionStatusManager.get(accessToken).getData();
 	}
 	
 	protected void validte(BindingResult bdResult) throws RequestFailedException {
 		for (ObjectError error : bdResult.getAllErrors()) {
 			throw new RequestFailedException(ErrorCodeEnum.PARAMS_ERROR, error.getDefaultMessage());
 		}
+	}
+
+	/**
+	 * 生成token 的 cookie
+	 * @param token
+	 * @return
+	 */
+	public void addTokenCooike(String token) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(SessionConstant.ACCESS_TOKEN + "=" + token)
+				.append(";Max-Age=" + 7200)
+				.append(";Path=/")
+				.append(";HttpOnly;");
+		response.addHeader("Set-Cookie", sb.toString());
+	}
+
+	/**
+	 * 获取token
+	 * @param request
+	 * @return
+	 */
+	private String getToken(ServletRequest request){
+		Cookie[] cookies = ((HttpServletRequest) request).getCookies();
+		for (Cookie cookie: cookies) {
+			if(SessionConstant.ACCESS_TOKEN.equals(cookie.getName())) return cookie.getValue();
+		}
+		return null;
 	}
 	
 }

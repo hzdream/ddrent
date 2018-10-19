@@ -7,6 +7,7 @@
  */
 package com.aifeng.ddrent.core.rpc.shortmsg;
 
+import com.aifeng.ddrent.core.rpc.BaseRPCService;
 import org.springframework.stereotype.Service;
 
 import com.aifeng.ddrent.api.sms.ShortMessageService;
@@ -18,7 +19,7 @@ import com.aifeng.ddrent.api.sms.ShortMessageService;
  * @date: 2018年9月25日 下午11:37:11  
  */
 @Service
-public class ShortMessageServiceImpl implements ShortMessageService {
+public class ShortMessageServiceImpl extends BaseRPCService implements ShortMessageService {
 
 	/* (non-Javadoc)
 	 * @see com.aifeng.ddrent.api.sms.ShortMessageService#sendSms(java.lang.String, java.lang.String)

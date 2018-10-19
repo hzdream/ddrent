@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.auth.RoleResourcesMapper">
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.auth.RoleResourcesDO">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="ROLE_ID" jdbcType="INTEGER" property="roleId" />
+    <result column="RES_ID" jdbcType="INTEGER" property="resId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <resultMap id="RoleResResultMap" type="com.aifeng.ddrent.core.dao.model.auth.RoleResourcesViewDO">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="v.ID" jdbcType="INTEGER" property="id" />
+    <result column="v.ROLE_ID" jdbcType="INTEGER" property="roleId" />
+    <result column="v.RES_ID" jdbcType="INTEGER" property="resId" />
+    <result column="v.CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="v.UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+
+    <result column="r.RES_NAME" jdbcType="VARCHAR" property="resName" />
+    <result column="r.RES_LEVEL" jdbcType="INTEGER" property="resLevel" />
+    <result column="r.PRE_RES_ID" jdbcType="INTEGER" property="preResId" />
+    <result column="r.RES_URI" jdbcType="VARCHAR" property="resUri" />
+    <result column="r.RES_ICON" jdbcType="VARCHAR" property="resIcon" />
+    <result column="r.RES_SORT_CODE" jdbcType="INTEGER" property="resSortCode" />
+    <result column="r.RES_TYPE" jdbcType="INTEGER" property="resType" />
+    <result column="r.IS_ACTIVE" jdbcType="INTEGER" property="isActive" />
+    <result column="r.RES_STRUCTURE" jdbcType="VARCHAR" property="resStructure" />
+    <result column="r.TYPE_" jdbcType="INTEGER" property="type" />
+    <result column="r.DISPLAY_TYPE" jdbcType="INTEGER" property="displayType" />
+    <result column="r.METHOD_TYPE" jdbcType="INTEGER" property="methodType" />
+    <result column="r.RES_URI_TYPE" jdbcType="INTEGER" property="resUriType" />
+    <result column="r.RES_USE_TYPE" jdbcType="VARCHAR" property="resUseType" />
+
+    <result column="t.ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+    <result column="t.ROLE_LEVEL" jdbcType="INTEGER" property="roleLevel" />
+    <result column="t.PRE_ROLE" jdbcType="INTEGER" property="preRole" />
+    <result column="t.ROLE_STRUCTURE" jdbcType="VARCHAR" property="roleStructure" />
+    <result column="t.ROLE_CODE" jdbcType="VARCHAR" property="roleCode" />
+  </resultMap>
+
+  <sql id="baseViewColumn" >
+    v.ID,v.ROLE_ID,v.RES_ID,v.CREATE_TIME,v.UPDATE_TIME,
+    r.RES_NAME,r.RES_LEVEL,r.PRE_RES_ID,R.RES_URI,R.RES_ICON,r.RES_SORT_CODE,r.RES_TYPE,
+    r.IS_ACTIVE,r.RES_STRUCTURE,r.TYPE,r.DISPLAY_TYPE,r.METHOD_TYPE,r.RES_URI_TYPE,r.RES_USE_TYPE,
+    t.ROLE_NAME,t.ROLE_LEVEL,t.PRE_ROLE,t.ROLE_STRUCTURE,t.ROLE_CODE
+
+  </sql>
+
+  <select id="selectViewByRoleResouce" parameterType="com.aifeng.ddrent.core.dao.model.auth.RoleResourcesDO" resultMap="RoleResResultMap">
+    select
+    <include refid="baseViewColumn"></include>
+    FROM ddrent_role_resources v, ddrent_resources r, ddrent_role t
+    <trim prefix="WHERE" prefixOverrides="AND|OR">
+      v.`RES_ID` = r.`ID`
+      AND v.`ROLE_ID` = t.`ID`
+      <if test="null!= id">
+        AND v.ID = #{id, jdbcType = INTEGER}
+      </if>
+      <if test="null!= roleId">
+        AND v.ROLE_ID = #{id, jdbcType = INTEGER}
+      </if>
+      <if test="null!= resId">
+        AND v.RES_ID = #{id, jdbcType = INTEGER}
+      </if>
+      <if test="null!= id">
+        AND v.CREATE_TIME > #{id, jdbcType = TIMESTAMP}
+      </if>
+      <if test="null!= id">
+        AND v.UPDATE_TIME > #{id, jdbcType = TIMESTAMP}
+      </if>
+
+    </trim>
+
+  </select>
+
+</mapper>

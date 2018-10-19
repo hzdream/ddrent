@@ -27,7 +27,7 @@ public class UserRoleService extends BaseService<UserRoleDO, UserRoleMapper> {
 
 	/**
 	 * 根据用户编号获取用户角色信息
-	 * @param id
+	 * @param userId	用户编号
 	 */
 	public BaseResult<UserRoleDO> findByUserId(Long userId) {
 		if(null != userId) {

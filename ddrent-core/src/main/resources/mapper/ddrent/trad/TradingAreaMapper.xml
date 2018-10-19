@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.trad.TradingAreaMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.trad.TradingAreaDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR" />
+    <result column="ADDRESS_" property="address" jdbcType="VARCHAR" />
+    <result column="COORDINATE" property="coordinate" jdbcType="VARCHAR" />
+    <result column="CITY_" property="city" jdbcType="VARCHAR" />
+    <result column="ACREAGE_" property="acreage" jdbcType="REAL" />
+    <result column="CREATOR_" property="creator" jdbcType="VARCHAR" />
+    <result column="CREATORT_ID" property="creatortId" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="EXTRA1_" property="extra1" jdbcType="VARCHAR" />
+    <result column="ORIGIN_" property="origin" jdbcType="VARCHAR" />
+    <result column="LEVEL_" property="level" jdbcType="INTEGER" />
+    <result column="STRUCTURE_" property="structure" jdbcType="VARCHAR" />
+    <result column="SNAPSHOT_" property="snapshot" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <insert id="insertByBatch" parameterType="java.util.List" >
+    insert into ddrent_trading_area (ID, NAME_, ADDRESS_,
+    COORDINATE, CITY_, ACREAGE_,
+    CREATOR_, CREATORT_ID, CREATE_TIME,
+    UPDATE_TIME, EXTRA1_, ORIGIN_,
+    SNAPSHOT_, LEVEL_, STRUCTURE_
+    )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR},
+      #{item.coordinate,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.acreage,jdbcType=REAL},
+      #{item.creator,jdbcType=VARCHAR}, #{item.creatortId,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.extra1,jdbcType=VARCHAR}, #{item.origin,jdbcType=VARCHAR},
+      #{item.snapshot,jdbcType=VARCHAR}, #{item.level,jdbcType=INTEGER}, #{item.structure,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

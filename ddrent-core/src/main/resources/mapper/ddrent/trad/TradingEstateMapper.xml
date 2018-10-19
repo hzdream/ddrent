@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aifeng.ddrent.core.dao.mapper.trad.TradingEstateMapper" >
+  <resultMap id="BaseResultMap" type="com.aifeng.ddrent.core.dao.model.trad.TradingEstateDO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="TRADING_ID" property="tradingId" jdbcType="BIGINT" />
+    <result column="ESTATE_ID" property="estateId" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>

@@ -7,7 +7,10 @@
  */
 package com.aifeng.ddrent.web.controller.house;
 
+import com.aifeng.ddrent.common.model.response.BaseResult;
+import com.aifeng.ddrent.core.service.house.HouseService;
 import com.aifeng.ddrent.web.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
  * @ClassName: houseController 
@@ -16,5 +19,14 @@ import com.aifeng.ddrent.web.controller.BaseController;
  * @date: 2018年9月17日 下午9:08:49  
  */
 public class houseController extends BaseController {
+
+    @Autowired
+    private HouseService houseService;
+
+    public BaseResult add(){
+
+
+        return null;
+    }
 
 }

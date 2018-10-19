@@ -9,6 +9,12 @@ package com.aifeng.ddrent.web.controller.auth;
 
 import javax.validation.Valid;
 
+import com.aifeng.ddrent.common.enums.auth.TokenAuthTypeEnum;
+import com.aifeng.ddrent.common.enums.auth.TokenTypeEnum;
+import com.aifeng.ddrent.common.model.auth.JwtToken;
+import com.aifeng.ddrent.core.dao.model.auth.UserTokenDO;
+import com.aifeng.ddrent.core.service.user.UserTokenService;
+import com.aifeng.ddrent.web.controller.auth.response.WeixinLoginResponse;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +55,9 @@ public class UserController extends BaseController {
 	@Autowired
 	private CaptchaService captchaService;
 
+	@Autowired
+	private UserTokenService userTokenService;
+
 	/**
 	 * 前端要求密码需要用md5加密之后传到后台
 	 * @param params
@@ -74,6 +83,16 @@ public class UserController extends BaseController {
 				BeanUtils.copyProperties(user, data);
 				result.setData(new DataContainer<UserLoginResponse>(data));
 				result.setCode(ErrorCodeEnum.SUCCESS);
+
+				// 生成 web login jwt
+				BaseResult<UserTokenDO> addTokenResult = userTokenService.addTokenByJwtToken(new JwtToken(user.getId(), user.getNickName(), TokenTypeEnum.NORMAL, getClientIp(), TokenAuthTypeEnum.WEB_LOGIN));
+
+				if(!addTokenResult.isSuccess()) return result.setCode(ErrorCodeEnum.TOKEN_ADD_FAILD);
+
+				String accessToken = addTokenResult.getData().getObj().getAccessToken();
+				//token 写到cookie里面去
+				addTokenCooike(accessToken);
+
 			}else {
 				throw new RequestFailedException(ErrorCodeEnum.USER_PASSWORD_MISMATCH);
 			}
@@ -86,16 +105,16 @@ public class UserController extends BaseController {
 	}
 	
 	@RequestMapping(value = "login/wx")
-	public Object wxLogin(String code, String state) {
-		//TODO state预留字段，现在小程序接口里面没有看到此字段
-		
-		//TODO code 交换小程序open_id 和 session_key
-		
-		//TODO 如果用户第一次登陆，则直接帮用户注册
-			//获取用户信息，前端调用wx.getUserInfo
-		
-		
-		return code;
+	public BaseResult<WeixinLoginResponse> wxLogin(String code, String state) {
+		BaseResult<WeixinLoginResponse> result = new BaseResult<>();
+		BaseResult<UserTokenDO> tokenResult = userTokenService.addUserTokenByWeixinCode(code);
+		WeixinLoginResponse response = new WeixinLoginResponse();
+		if(tokenResult.isSuccess()) return result.setCode(tokenResult);
+
+		UserTokenDO userTokenDO = tokenResult.getData().getObj();
+
+		BeanUtils.copyProperties(userTokenDO, response);
+		return result.setData(new DataContainer<>(response)).setCode(ErrorCodeEnum.SUCCESS);
 		
 	}
 	

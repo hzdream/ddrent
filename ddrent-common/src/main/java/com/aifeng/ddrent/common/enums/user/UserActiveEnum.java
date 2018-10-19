@@ -14,9 +14,9 @@ package com.aifeng.ddrent.common.enums.user;
  * @date: 2018年9月26日 上午12:15:33  
  */
 public enum UserActiveEnum {
-	UNACTIVE,		//未激活
+	UNACTIVATED,		//未激活
 	ACTIVE,			//已激活
-	FORBDDIEN,		//已经被禁止
+	FORBIDDEN,		//已经被禁止
 	;
 	
 	/**

@@ -21,8 +21,8 @@ public class RoleResourcesDO implements BaseDOI {
     /**
      * 用户编号
      */
-    @Column(name = "USER_ID")
-    private Long userId;
+    @Column(name = "RES_ID")
+    private Long resId;
 
     /**
      * 创建时间
@@ -68,22 +68,12 @@ public class RoleResourcesDO implements BaseDOI {
         this.roleId = roleId;
     }
 
-    /**
-     * 获取用户编号
-     *
-     * @return USER_ID - 用户编号
-     */
-    public Long getUserId() {
-        return userId;
+    public Long getResId() {
+        return resId;
     }
 
-    /**
-     * 设置用户编号
-     *
-     * @param userId 用户编号
-     */
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setResId(Long resId) {
+        this.resId = resId;
     }
 
     /**

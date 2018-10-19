@@ -7,9 +7,14 @@
  */
 package com.aifeng.ddrent.core.service.user;
 
-import java.util.HashMap;
-import java.util.Map;
 
+import com.aifeng.ddrent.common.enums.auth.ResTypeEnum;
+import com.aifeng.ddrent.common.model.auth.JwtToken;
+import com.aifeng.ddrent.common.util.data.id.SequenceGeneratorUtil;
+import com.aifeng.ddrent.core.dao.model.auth.*;
+import com.aifeng.ddrent.core.service.auth.RoleResourcesService;
+import com.aifeng.ddrent.core.service.auth.RoleService;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +31,16 @@ import com.aifeng.ddrent.common.util.data.JwtUtil;
 import com.aifeng.ddrent.common.util.system.StringUtils;
 import com.aifeng.ddrent.core.common.model.dto.WeixinSessionDTO;
 import com.aifeng.ddrent.core.dao.mapper.auth.UserTokenMapper;
-import com.aifeng.ddrent.core.dao.model.auth.RoleDO;
-import com.aifeng.ddrent.core.dao.model.auth.UserDO;
-import com.aifeng.ddrent.core.dao.model.auth.UserRoleDO;
-import com.aifeng.ddrent.core.dao.model.auth.UserTokenDO;
 import com.aifeng.ddrent.core.service.BaseService;
 import com.aifeng.ddrent.core.service.weixin.MiniWeixinService;
 
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /** 
  * @ClassName: UserTokenService 
@@ -55,12 +62,12 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 	
 	@Autowired
 	UserService userService;
-	
-	@Autowired
-	UserTokenService userTokenService;
-	
+
 	@Autowired
 	UserRoleService userRoleService;
+
+	@Autowired
+	RoleResourcesService roleResourcesService;
 	
 	/**
 	 * 根据用户编号和授权类型把符合条件的token置为失效状态
@@ -82,6 +89,23 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 		}
 		
 		return -1;
+	}
+
+	/**
+	 * 根据token使 userToken 失效
+	 * @param accessToken
+	 * @return
+	 */
+	public int update2invalid(String accessToken) {
+
+		if(StringUtils.isBlank(accessToken)) return 0;
+
+		Example example = new Example(UserTokenDO.class);
+		example.createCriteria().andEqualTo("accessToken", accessToken);
+
+		UserTokenDO updateRecord = new UserTokenDO();
+		updateRecord.setIsActive(Boolean.FALSE);
+		return mapper.updateByExampleSelective(updateRecord, example);
 	}
 	
 	/* 
@@ -136,11 +160,28 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 	}
 
 	/**
+	 * 根据accessToken获取token信息
+	 * @param accessToken
+	 * @return
+	 */
+	public UserTokenDO getTokenByAccessToken(String accessToken){
+		Example example = new Example(UserTokenDO.class);
+
+		example.createCriteria().andEqualTo("accessToken", accessToken);
+
+		List<UserTokenDO> userTokenDOS = mapper.selectByExample(example);
+
+		if(null != userTokenDOS || userTokenDOS.isEmpty()) return null;
+
+		return userTokenDOS.get(0);
+	}
+
+	/**
 	 * 根据登陆code 获取用户token
 	 * @param code
 	 * @return
 	 */
-	public BaseResult<UserTokenDO> getUserTokenByWeixinCode(String code) {
+	public BaseResult<UserTokenDO> addUserTokenByWeixinCode(String code) {
 		BaseResult<UserTokenDO> result = new BaseResult<>();
 		
 		//校验参数准确性
@@ -154,7 +195,7 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 		if(StringUtils.isBlank(weixinSession.getErrcode())) {
 			String openId = weixinSession.getOpenid();
 			
-			return userTokenService.addTokenByWxSessionKey(openId, weixinSession.getSession_key());
+			return addTokenByWxSessionKey(openId, weixinSession.getSession_key());
 		}else {
 			logger.error("[根据code获取用户token] 失败，请求参数[{}], 失败原因 [{}]", code, weixinSession.getErrmsg());
 			result.setCode(ErrorCodeEnum.WX_REQUEST_ERROR, weixinSession.getErrmsg());
@@ -169,7 +210,7 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 	 * @return
 	 */
 	@Transactional
-	private BaseResult<UserTokenDO> addTokenByWxSessionKey(String openId, String session_key) {
+	public BaseResult<UserTokenDO> addTokenByWxSessionKey(String openId, String session_key) {
 		
 		try {
 			BaseResult<UserTokenDO> result = new BaseResult<>();
@@ -180,11 +221,13 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 				
 				// 授权oken
 				UserTokenDO token = new UserTokenDO();
+				token.setId(SequenceGeneratorUtil.nextId());
 				token.setAuthType(TokenAuthTypeEnum.WX_LOGIN.name());
 				token.setExternalId(session_key);
 				//设置token为激活类型
 				token.setIsActive(Boolean.TRUE);
-				
+
+
 				//用户不存在，则先帮用户预注册
 				if(null == user) {
 					user = new UserDO();
@@ -192,7 +235,7 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 					user.setOriginOpenId(openId);
 					user.setOrigin(OriginEnum.WX_REGISTER.name());
 					//设置未激活
-					user.setIsActive(UserActiveEnum.UNACTIVE.ordinal());
+					user.setIsActive(UserActiveEnum.UNACTIVATED.ordinal());
 					
 					// 注册用户
 					BaseResult<UserDO> userResult = userService.register(user, UserRoleLevelEnum.TOURIST);
@@ -212,27 +255,14 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 				}else {
 					//正常用户信息token类型
 					token.setTokenType(TokenTypeEnum.NORMAL.ordinal());
-					BaseResult<UserRoleDO> userRoleResult = userRoleService.findByUserId(user.getId());
-					if(userRoleResult.isSuccess() && userRoleResult.getData().getRows().size()>0) {
-						StringBuilder sb = new StringBuilder();
-						userRoleResult.getData().getRows().stream().forEach(userRole->{
-							sb.append(userRole.getRoleId() + ",");
-						});
-						token.setUserRoles(sb.toString());
-					}else {
-						logger.info("[微信session添加token] 失败-->查询用户角色失败， 请求参数{},失败原因{}", "{\"openId\":\"" 
-								+ openId + "\",\"session_key\":\"" + session_key + "\"}", "参数异常");
-						result.setCode(ErrorCodeEnum.PARAMS_ERROR);
-						return result;
-					}
+					if (getUserRoleAndUriResources(user.getId(), token)) return result.setCode(ErrorCodeEnum.PARAMS_ERROR);
 				}
 				
 				//设置用户编号
 				token.setUserId(user.getId());
 				
 				//生成token
-				Map<String, String> claims = token2UnActiveClaims(token);
-				token.setAccessToken(JwtUtil.encodeToken(claims));
+				token.setAccessToken(JwtUtil.encodeToken(new JwtToken(token.getUserId(), TokenTypeEnum.getByValue(token.getTokenType()), token.getAuthType())));
 				
 				//token 入库
 				token = add(token);
@@ -249,17 +279,124 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 		
 	}
 
+	@Transactional
+	public BaseResult<UserTokenDO> addTokenByJwtToken(JwtToken jwtToken){
+
+		BaseResult<UserTokenDO> result = new BaseResult<>();
+
+		// 校验参数有效性
+		if(!jwtToken.isValidate()) return result.setCode(ErrorCodeEnum.PARAMS_ERROR);
+
+		//查询用户是否存在
+		UserDO user = userService.getById(jwtToken.getUserId());
+		if(null == user) return result.setCode(ErrorCodeEnum.USER_NOT_EXIST);
+
+		UserTokenDO userTokenDO = new UserTokenDO();
+
+		userTokenDO.setUserId(user.getId());
+		userTokenDO.setTokenType(TokenTypeEnum.NORMAL.ordinal());
+		userTokenDO.setAuthType(TokenAuthTypeEnum.WEB_LOGIN.name());
+		userTokenDO.setIsActive(Boolean.TRUE);
+		userTokenDO.setLoginIp(jwtToken.getLoginIp());
+		userTokenDO.setId(SequenceGeneratorUtil.nextId());
+
+		// 设置用户角色列表
+		if (getUserRoleAndUriResources(user.getId(), userTokenDO)) return result.setCode(ErrorCodeEnum.PARAMS_ERROR);
+
+		//生成token
+		userTokenDO.setAccessToken(JwtUtil.encodeToken(jwtToken));
+
+		//token 入库
+		userTokenDO = add(userTokenDO);
+
+		return result.setData(new DataContainer<>(userTokenDO)).setCode(ErrorCodeEnum.SUCCESS);
+	}
+
 	/**
+	 *  刷新授权token
+	 * @param accessToken
+	 * @return
+	 */
+	public BaseResult<UserTokenDO> refreshJwtToken(String accessToken){
+
+		BaseResult<UserTokenDO> result = new BaseResult<>();
+
+		DecodedJWT decodedJWT = JwtUtil.verifyWithinLeeway(accessToken);
+
+		if(null == decodedJWT) return result.setCode(ErrorCodeEnum.AUTH_LOGIN_TIMEOUT);
+
+		UserTokenDO tokenDO = getTokenByAccessToken(accessToken);
+
+		/** 生成新的token */
+		UserTokenDO newTokenDO = new UserTokenDO();
+		newTokenDO.copy(tokenDO);
+
+		JwtToken jwtToken = new JwtToken(newTokenDO.getUserId(), TokenTypeEnum.getByValue(newTokenDO.getTokenType()), newTokenDO.getAuthType());
+		newTokenDO.setAccessToken(JwtUtil.encodeToken(jwtToken));
+
+		//token 入库
+		newTokenDO = add(newTokenDO);
+
+		return result.setData(new DataContainer<>(newTokenDO)).setCode(ErrorCodeEnum.SUCCESS);
+	}
+
+	private static final String  START_PREFIX = "^";
+	private static final String END_AFTERFIX = "$";
+	/**
+	 * 查询并设置用户角色列表
+	 * @param userId
 	 * @param token
 	 * @return
 	 */
-	private Map<String, String> token2UnActiveClaims(UserTokenDO token) {
-		Map<String, String> claims = new HashMap<>(12);
-		
-		claims.put(USER_ID, token.getId()+"");
-		claims.put(TOKEN_TYPE, token.getTokenType()+ "");
-		
-		return claims;
+	private boolean getUserRoleAndUriResources(Long userId, UserTokenDO token) {
+		int tokenType = TokenAuthTypeEnum.getByName(token.getAuthType()).ordinal();
+
+		// 查询用户角色列表
+		BaseResult<UserRoleDO> userRoleResult = userRoleService.findByUserId(userId);
+		if(userRoleResult.isSuccess() && userRoleResult.getData().getRows().size()>0) {
+			StringBuffer roleSb = new StringBuffer();
+			StringBuffer uriRegexpSb = new StringBuffer();
+			userRoleResult.getData().getRows().stream().map(userRoleDO -> {
+				roleSb.append(userRoleDO.getId()+ ",");
+				return userRoleDO.getRoleId();
+			}).forEach(roleId -> {
+				// 获取每个角色的资源regexp 列表
+				List<RoleResourcesViewDO> roleResourcesViewDOS = roleResourcesService.findRoleResourcesByRoleId(roleId);
+				roleResourcesViewDOS.stream().filter(roleResourcesViewDO ->
+						//筛选操作资源和资源类型相符或通用的资源
+					roleResourcesViewDO.getType() == 2 &&
+							(Objects.equals(tokenType, roleResourcesViewDO.getResType())
+									|| Objects.equals(TokenAuthTypeEnum.COMMON.ordinal(), roleResourcesViewDO.getResType()))
+				).forEach( roleResourcesView -> {
+					// 提取uri pattern
+					String uri = roleResourcesView.getResUri();
+					int resType = roleResourcesView.getResType();
+
+					if(Objects.equals(ResTypeEnum.NORMAL.ordinal(), resType)){
+						uri = START_PREFIX + uri + END_AFTERFIX;
+					}
+					uriRegexpSb.append(uri + ",");
+				});
+
+			});
+
+			// 去尾部逗号存入token
+			if(roleSb.length() > 0){
+				token.setUserRoles(roleSb.substring(0, roleSb.length() - 1));
+			}else{
+				token.setUserRoles("");
+			}
+			if(uriRegexpSb.length() > 0){
+				token.setUriRegexp(uriRegexpSb.substring(0, uriRegexpSb.length() - 1));
+			}else{
+				token.setUriRegexp("");
+			}
+
+			return true;
+		}else {
+			logger.info("[查询用户角色] 失败 ， 请求参数{},失败原因{}", "{\"userId\":\""  + userId + "\"}", "参数异常");
+			return false;
+		}
 	}
-	
+
 }

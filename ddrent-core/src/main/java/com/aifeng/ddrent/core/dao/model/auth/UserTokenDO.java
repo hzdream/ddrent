@@ -78,6 +78,12 @@ public class UserTokenDO implements BaseDOI {
     private Integer tokenType;
 
     /**
+     * 用户资源正则列表， “，”分隔
+     */
+    @Column(name = "URI_REGEXP")
+    private String uriRegexp;
+
+    /**
      * @return ID
      */
     public Long getId() {
@@ -262,5 +268,37 @@ public class UserTokenDO implements BaseDOI {
 	public void setTokenType(Integer tokenType) {
 		this.tokenType = tokenType;
 	}
-    
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public String getUriRegexp() {
+        return uriRegexp;
+    }
+
+    public void setUriRegexp(String uriRegexp) {
+        this.uriRegexp = uriRegexp;
+    }
+
+    /**
+     * 拷贝授权信息
+     * @param userTokenDO
+     */
+	public void copy(UserTokenDO userTokenDO){
+	    if(null == userTokenDO) return;
+
+	    this.setLoginIp(userTokenDO.getLoginIp());
+	    this.setIsActive(userTokenDO.getIsActive());
+	    this.setAuthType(userTokenDO.getAuthType());
+	    this.setTokenType(userTokenDO.getTokenType());
+	    this.setUserId(userTokenDO.getUserId());
+	    this.setExternalId(userTokenDO.getExternalId());
+	    this.setUserRoles(userTokenDO.getUserRoles());
+	    this.setUriRegexp(userTokenDO.getUriRegexp());
+    }
 }

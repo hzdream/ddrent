@@ -7,7 +7,7 @@
     -->
     <id column="ID" jdbcType="INTEGER" property="id" />
     <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
-    <result column="ROLE_LEVLE" jdbcType="INTEGER" property="roleLevle" />
+    <result column="ROLE_LEVEL" jdbcType="INTEGER" property="roleLevel" />
     <result column="PRE_ROLE" jdbcType="INTEGER" property="preRole" />
     <result column="ROLE_STRUCTURE" jdbcType="VARCHAR" property="roleStructure" />
     <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />

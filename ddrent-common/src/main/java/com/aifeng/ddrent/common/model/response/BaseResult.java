@@ -1,6 +1,6 @@
 /**
  * Copyright © 2018 aifeng club All rights reserved.
- * @Package: com.aifeng.ddrent.web.response 
+ * @Package: com.aifeng.ddrent.web.response
  * @author imart·deng
  * @date 创建时间：2018年8月13日 下午2:49:53
  * @version 1.0
@@ -36,7 +36,7 @@ public class BaseResult<T> {
 
 	/**
 	 * 设置错误参数
-	 * @param errorCode
+	 * @param errorCode		错误编码
 	 */
 	public BaseResult(ErrorCodeEnum errorCode) {
 		super();
@@ -49,8 +49,8 @@ public class BaseResult<T> {
 	}
 
 	/**
-	 * @param errorCode
-	 * @param msg
+	 * @param errorCode		错误编码
+	 * @param msg			信息
 	 */
 	public BaseResult(ErrorCodeEnum errorCode, String msg) {
 		super();
@@ -62,8 +62,8 @@ public class BaseResult<T> {
 	}
 	
 	/**
-	 * @param errorCode
-	 * @param data
+	 * @param errorCode		错误编码
+	 * @param data			信息
 	 */
 	public BaseResult(ErrorCodeEnum errorCode, DataContainer<T> data) {
 		super();
@@ -76,9 +76,9 @@ public class BaseResult<T> {
 	}
 
 	/**
-	 * @param errorCode
-	 * @param msg
-	 * @param data
+	 * @param errorCode		错误信息
+	 * @param msg			信息
+	 * @param data			数据内容
 	 */
 	public BaseResult(ErrorCodeEnum errorCode, String msg, DataContainer<T> data) {
 		super();
@@ -114,12 +114,28 @@ public class BaseResult<T> {
 	/**
 	 * @param errorCode the errorCode to set
 	 */
-	public void setCode(ErrorCodeEnum errorCode) {
+	public BaseResult<T> setCode(ErrorCodeEnum errorCode) {
 		if(null != errorCode) {
 			success = errorCode.isSuccess();
 			this.code = errorCode.code();
 			this.message = errorCode.msg();
 		}
+		return this;
+	}
+
+	/**
+	 *
+	 * @param baseResult
+	 * @param <R>
+	 * @return
+	 */
+	public <R> BaseResult<T> setCode(BaseResult<R> baseResult) {
+		if(null != baseResult){
+			this.success = baseResult.isSuccess();
+			this.code = baseResult.getCode();
+			this.message = baseResult.getMessage();
+		}
+		return this;
 	}
 
 	/**
@@ -132,8 +148,9 @@ public class BaseResult<T> {
 	/**
 	 * @param msg the msg to set
 	 */
-	public void setMessage(String msg) {
+	public BaseResult<T> setMessage(String msg) {
 		this.message = msg;
+		return this;
 	}
 
 	/**
@@ -146,35 +163,36 @@ public class BaseResult<T> {
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(DataContainer<T> data) {
+	public BaseResult<T> setData(DataContainer<T> data) {
 		this.data = data;
+		return this;
 	}
 
 	/**
-	 * @param captchaFobidden
-	 * @param string
+	 * @param errorCode		错误代码
+	 * @param message		错误信息
 	 */
-	public void setCode(ErrorCodeEnum errorCode, String message) {
+	public BaseResult<T> setCode(ErrorCodeEnum errorCode, String message) {
 		if(null != errorCode) {
 			success = errorCode.isSuccess();
 			this.code = errorCode.code();
 			this.message = message;
 		}
-		
+		return this;
 	}
 
 	/**
-	 * @param success2
-	 * @param message2
+	 * @param errorCode		错误信息
+	 * @param data			数据内容
 	 */
-	public void setCode(ErrorCodeEnum errorCode, DataContainer<T> data) {
+	public BaseResult<T> setCode(ErrorCodeEnum errorCode, DataContainer<T> data) {
 		this.data = data;
 		if(null != errorCode) {
 			success = errorCode.isSuccess();
 			this.code = errorCode.code();
 			this.message = errorCode.msg();
 		}
-		
+		return this;
 	}
 	
 }

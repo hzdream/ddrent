@@ -16,5 +16,6 @@
     <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="EXTERNAL_ID" property="externalId" jdbcType="VARCHAR" />
     <result column="TOKEN_TYPE" property="tokenType" jdbcType="INTEGER" />
+    <result column="URI_REGEXP" property="uriRegexp" jdbcType="VARCHAR" />
   </resultMap>
 </mapper>

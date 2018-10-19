@@ -12,7 +12,11 @@ import java.util.Arrays;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import com.aifeng.ddrent.api.auth.AuthRPCService;
+import com.aifeng.ddrent.web.filter.AuthenticationFilter;
 import org.hibernate.validator.HibernateValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,10 +65,11 @@ public class WebConfig implements WebMvcConfigurer {
 	public FilterRegistrationBean<CorsFilter> corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", buildConfig()); // 4
-		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(source));
+		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
 		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return bean;
 	}
+
 	private CorsConfiguration buildConfig() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL); // 1
@@ -74,6 +79,26 @@ public class WebConfig implements WebMvcConfigurer {
 		corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Cookie"));
 		corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
 		return corsConfiguration;
+	}
+
+	/**
+	 * 授权过滤器
+	 * @return
+	 */
+	@Bean
+	public FilterRegistrationBean authFilter(@Value("#{filter.exclude.pattrens}") String excludePatterns, @Autowired AuthRPCService authRPCService) {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+
+		//添加过滤器
+		registration.setFilter(new AuthenticationFilter(authRPCService));
+
+		//设置过滤路径，/*所有路径
+		registration.addUrlPatterns("/**");
+		registration.addInitParameter("excludePatterns", excludePatterns);
+		registration.setName("authentication");
+		registration.setOrder(1);//设置优先级
+
+		return registration;
 	}
 	
 //	@Bean

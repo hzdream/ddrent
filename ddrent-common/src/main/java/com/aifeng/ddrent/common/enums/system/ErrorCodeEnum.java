@@ -16,7 +16,8 @@ package com.aifeng.ddrent.common.enums.system;
 public enum ErrorCodeEnum {
 	SUCCESS("000000", "请求成功"),
 	SUCCESS_BUT_NO_RESULT("000010", "请求成功，但是没有数据"),
-	
+	SUCCESS_TOKEN_REFRESHED("000020", "请求成功，token已经重新生成"),
+
 	//请求问题
 	PARAMS_ERROR("100001", "参数异常"),
 	SYSTEM_ERROR("100002", "系统异常"),
@@ -29,7 +30,10 @@ public enum ErrorCodeEnum {
 	//权限问题
 	AUTH_NORIGHT("100011", "请求无权限"),
 	AUTH_LOGIN_TIMEOUT("100012", "登陆超时"),
-	
+	//token 问题
+	TOKEN_ADD_FAILD("110001", "token 生成失败"),
+//	TOKEN_TIMEOUT("11002", "TOKEN 失效")
+
 	//系统监控异常问题
 	FREQUENT_REQUESTS("100021", "请求过于频繁，请您注意"),
 	FREQUENT_REQUESTS_FORBIDDEN("100022", "请求过于频繁，为保护系统稳定性您已经被暂时禁止访问"), 
@@ -88,7 +92,8 @@ public enum ErrorCodeEnum {
 	public boolean isSuccess() {
 		switch(this) {
 		case SUCCESS:
-		case SUCCESS_BUT_NO_RESULT:
+		case SUCCESS_BUT_NO_RESULT:		//请求无结果
+		case SUCCESS_TOKEN_REFRESHED:	//token重新刷新
 			return true;
 		default:
 			return false;
