@@ -17,7 +17,9 @@ public enum UserRoleEnum {
 	TENANT,			//租客
 	AGENT,			//经纪人
 	LANDLORD,		//房东
-	SYSTEM_MANAGER;	//管理员
+	SYSTEM_MANAGER,	//管理员
+	TOURIST,		//游客
+	;
 	
 	/**
 	 * 获取枚举实际值
@@ -40,8 +42,10 @@ public enum UserRoleEnum {
 			return "经纪人";
 		case LANDLORD:
 			return "房东";
+		case SYSTEM_MANAGER:
+			return  "管理员";
 		default:
-			return "管理员";
+			return "游客";
 		}
 		
 	}

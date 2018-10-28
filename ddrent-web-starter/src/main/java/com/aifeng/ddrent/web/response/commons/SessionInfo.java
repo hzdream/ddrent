@@ -200,4 +200,12 @@ public class SessionInfo implements Serializable {
 	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
+
+	public UserRoleEnum getRole(){
+		if(null != roles){
+			String[] roleIds = roles.split(",");
+		}
+
+		return UserRoleEnum.TOURIST;
+	}
 }

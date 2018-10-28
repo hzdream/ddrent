@@ -106,7 +106,7 @@ public class SystemConfigManager {
 	
 	/**
 	 * 获取容器配置大小
-	 * @return
+	 * @return	int
 	 */
 	public static int size() {
 		return size;
@@ -125,7 +125,7 @@ public class SystemConfigManager {
 	/**
 	 * 获取系统配置键值,找不到的时候返回""字符串
 	 * @param key
-	 * @return
+	 * @return	String
 	 */
 	public static String getSystemConfigValue(String key) {
 		return getConfigValue(SYSTEM_PREFIX, key);
@@ -134,7 +134,7 @@ public class SystemConfigManager {
 	/**
 	 * 获取系统配置键值对象
 	 * @param key
-	 * @return
+	 * @return	SystemConfigDO
 	 */
 	public static SystemConfigDO getSystemConfig(String key) {
 		return getConfig(SYSTEM_PREFIX, key);
@@ -145,7 +145,7 @@ public class SystemConfigManager {
 	/**
 	 * 获取用户配置键值
 	 * @param key
-	 * @return
+	 * @return	String
 	 */
 	public static String getUserConfigValue(String key) {
 		return getConfigValue(USER_PREFIX, key);
@@ -154,7 +154,7 @@ public class SystemConfigManager {
 	/**
 	 * 
 	 * @param key
-	 * @return
+	 * @return	SystemConfigDO
 	 */
 	public static SystemConfigDO getUserConfig(String key) {
 		return getConfig(USER_PREFIX, key);
@@ -164,7 +164,7 @@ public class SystemConfigManager {
 	 * 获取指定prefix + key 的配置值
 	 * @param prefix
 	 * @param key
-	 * @return
+	 * @return String
 	 */
 	public static String getConfigValue(String prefix, String key) {
 		SystemConfigDO systemConfig = getConfig(prefix, key);
@@ -178,7 +178,7 @@ public class SystemConfigManager {
 	 * 获取指定prefix + key 的配置对象
 	 * @param prefix
 	 * @param key
-	 * @return
+	 * @return SystemConfigDO
 	 */
 	public static SystemConfigDO getConfig(String prefix, String key) {
 		assert null != key : "key can't be null.";
@@ -194,7 +194,7 @@ public class SystemConfigManager {
 	/**
 	 * 全名匹配获取配置值
 	 * @param fullName
-	 * @return
+	 * @return String
 	 */
 	public static String getConfigValueByFullName(String fullName) {
 		assert null != fullName : "fullName can't be null";
@@ -210,7 +210,7 @@ public class SystemConfigManager {
 	/**
 	 * 全名匹配获取配置对象
 	 * @param fullName
-	 * @return
+	 * @return SystemConfigDO
 	 */
 	public static SystemConfigDO getConfigByFullName(String fullName) {
 		assert null != fullName : "fullName can't be null";
@@ -220,18 +220,27 @@ public class SystemConfigManager {
 	public static final String JWT_SECRET_KEY = "jwt.hmacal.key";
 	/**
 	 * 获取jwt 密钥
-	 * @return
+	 * @return	string
 	 */
-	public String getJwtSecretKey() {
+	public static String getJwtSecretKey() {
 		return getSystemConfigValue(JWT_SECRET_KEY);
 	}
 	
 	public static final String SYS_AES_KEY = "aes.key";
 	/**
 	 * 获取AES 密钥
-	 * @return
+	 * @return	string
 	 */
-	public String getAESKey() {
+	public static String getAESKey() {
 		return getSystemConfigValue(SYS_AES_KEY);
+	}
+
+	public static final String SYS_MD5_KEY = "md5.key";
+	/**
+	 * 获取MD5密钥
+	 * @return	string
+	 */
+	public static String getMd5Key(){
+		return getSystemConfigValue(SYS_MD5_KEY);
 	}
 }

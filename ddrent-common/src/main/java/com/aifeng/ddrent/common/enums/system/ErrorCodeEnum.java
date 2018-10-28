@@ -53,6 +53,9 @@ public enum ErrorCodeEnum {
 	
 	//微信请求
 	WX_REQUEST_ERROR("130001", "微信请求失败"),
+
+	// 文件
+	FILE_UPLOAD_FAILDED("140001", "文件上传失败"),
 	
 	;	
 	

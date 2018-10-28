@@ -7,14 +7,17 @@
  */
 package com.aifeng.ddrent.common.util.io;
 
+import com.aifeng.ddrent.common.enums.io.FileType;
+import com.aifeng.ddrent.common.util.system.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -25,6 +28,7 @@ import javax.imageio.ImageIO;
  * @date: 2018年9月18日 下午2:57:02  
  */
 public class ImageUtils {
+	private static final Logger logger = LoggerFactory.getLogger(ImageUtils.class);
 	
 	private static final String FONT_NAME = "微软雅黑";
 	private static final int FONT_STYLE = Font.ITALIC;
@@ -94,6 +98,64 @@ public class ImageUtils {
 	 	 }
 		 length = length%2==0?length/2:length/2+1;
 		 return length;
+	}
+
+	/**
+	 * 校验是否为允许的图片类型
+	 * @param path		图片文件路径
+	 * @param types		允许的图片类型
+	 * @return 如果符合允许图片后缀返回图片后缀(.png ...), 否则返回null
+	 */
+	public static String verifyImageType(String path, FileType ... types){
+		if(StringUtils.isEmpty(path)) return null;
+		if(null == types) types = new FileType[]{FileType.JPEG,FileType.PNG};
+		byte[] b = new byte[28];
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(new File(path));
+			inputStream.read(b, 0, 28);
+			String suffixHex = byte1Hex(b);
+			FileType fileType = FileType.getByValue(suffixHex);
+			if(null != fileType) {
+				for (FileType fileType1: types) {
+					// office 文件特殊处理
+					if(fileType1.equals(FileType.XLS_DOC) && fileType1.equals(fileType)) {
+						path = path.substring(path.lastIndexOf("."));
+						if(path.indexOf("xls")==0 || path.indexOf("doc") == 0) return "." + path;
+					}
+					if(fileType1.equals(fileType)) fileType.getSuffix();
+				}
+			}
+		} catch (IOException e) {
+			logger.error("[校验文件类型] 文件流失败, 请求path:{}, 失败原因:{}", path, e.getMessage());
+		}finally {
+			if(null != inputStream){
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					logger.error("[校验文件类型] 关闭文件流失败, 请求path:{}, 失败原因:{}", path, e.getMessage());
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	/**
+	 * 字节转16进制字符串
+	 * @param bytes
+	 * @return
+	 */
+	public static String byte1Hex(byte[] bytes){
+		if(null == bytes) return "";
+		char[] hexChars = new char[bytes.length * 2];
+		for ( int j = 0; j < bytes.length; j++ ) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
 	}
 
 }

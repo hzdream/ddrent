@@ -1,5 +1,6 @@
 package com.aifeng.ddrent.core.common.utils.io.aliOSS;
 
+import com.aifeng.ddrent.common.util.data.id.SequenceGeneratorUtil;
 import com.aifeng.ddrent.common.util.system.StringUtils;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AliOSSUtil {
@@ -213,41 +215,38 @@ public class AliOSSUtil {
     /**
      * 上传文件流
      * @param bucketName    空间名
-     * @param key           文件路径
      * @param isList            文件流对象
-     * @return  true 请求发送成功，false 请求异常
+     * @return  成功返回文件名称list，失败返回 null
      */
-    public static boolean uploadStreamByBatch (String bucketName, String key, List<InputStream> isList) {
+    public static List<String> uploadStreamByBatch (String bucketName, List<InputStream> isList) {
 
-        if(StringUtils.isBlank(key) || null == isList || isList.isEmpty()) return false;
+        if(null == isList || isList.isEmpty()) return null;
 //        bucketName = StringUtils.isBlank(bucketName) ? BUCKET_NAME : bucketName;
 
         OSS client = null;
         try {
-            client = createOSSClientWithBucket(bucketName);
-
-            for (InputStream is: isList) {
-                client.putObject(bucketName, key, is);
-            }
-            return true;
+            OSS client2 = client = createOSSClientWithBucket(bucketName);
+            List<String> keys = new ArrayList<>(isList.size());
+            isList.stream().forEach( is -> {
+                String key = SequenceGeneratorUtil.nextId() + "";
+                keys.add(key);
+                client2.putObject(bucketName, key, is);
+            });
+            return keys;
         } catch (OSSException oe) {
             ossExceptionLog(oe, "上传文件", "{\"bucketName\":\"" +
                     bucketName +
-                    "\",\"key\":\"" +
-                    key +
                     "\"}");
         } catch (ClientException ce) {
             clientExceptionLog(ce, "上传文件", "{\"bucketName\":\"" +
                     bucketName +
-                    "\",\"key\":\"" +
-                    key +
                     "\"}");
         }catch (Exception e){
             logger.error("[上传文件] 异常， 参数：[{}], 异常原因{}", "", e);
         }finally {
             shutdownOSS(client);
         }
-        return false;
+        return null;
     }
 
     /**
@@ -285,6 +284,11 @@ public class AliOSSUtil {
             logger.error("[上传文件] 异常， 参数：[{}], 异常原因{}", "", e);
         }finally {
             shutdownOSS(client);
+            try {
+                is.close();
+            } catch (IOException e) {
+                logger.error("[上传文件]  文件你流关闭异常异常， 参数：[{}], 异常原因{}", "", e);
+            }
         }
         return false;
     }
@@ -410,6 +414,14 @@ public class AliOSSUtil {
         return null;
     }
 
+    /**
+     * 获取默认空间名
+     * @return  默认空间名
+     */
+    public static String getDefaultBucketName() {
+        return BUCKET_NAME;
+    }
+
     public static void main(String[] args) {
 //        String regexp = ".*/$";
 //        regexp = "(.|\\n)*";
@@ -464,7 +476,7 @@ public class AliOSSUtil {
      * 关闭oss
      * @param oss
      */
-    private static void shutdownOSS(OSS oss) {
+    public static void shutdownOSS(OSS oss) {
         if(null != oss){
             oss.shutdown();
         }

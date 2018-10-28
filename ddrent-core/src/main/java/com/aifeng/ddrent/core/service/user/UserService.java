@@ -9,6 +9,7 @@ package com.aifeng.ddrent.core.service.user;
 
 import java.util.List;
 
+import com.aifeng.ddrent.core.common.utils.data.Md5Util;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,7 @@ public class UserService extends BaseService<UserDO, UserMapper> {
 					//正常注册用户
 					user.setIsActive(UserActiveEnum.ACTIVE.ordinal());
 					//加密存储密码
-					user.setPassword(Md5Crypt.md5Crypt(user.getPassword().getBytes()));
+					user.setPassword(Md5Util.decode(user.getPassword().getBytes()));
 					//设置用户注册来源
 					user.setOrigin(OriginEnum.WEB_REGISTER.name());
 					

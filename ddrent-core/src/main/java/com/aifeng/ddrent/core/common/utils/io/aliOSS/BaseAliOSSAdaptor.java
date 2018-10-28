@@ -4,9 +4,9 @@ import com.aliyun.oss.OSSException;
 
 public class BaseAliOSSAdaptor {
     protected static String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    protected static String accessKeyId = "";
-    protected static String accessKeySecret = "";
-    protected static String bucketName = "";
+    protected static String accessKeyId = "LTAITalu7G0kHObq";
+    protected static String accessKeySecret = "fEKNjWCJKlACT6hhpKsGSinvawHDro";
+    protected static String bucketName = "ddrentimages1";
 
     protected static String getOssMessage(OSSException oe){
         if(null != oe){

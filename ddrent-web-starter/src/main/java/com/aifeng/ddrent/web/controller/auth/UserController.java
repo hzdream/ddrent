@@ -7,13 +7,27 @@
  */
 package com.aifeng.ddrent.web.controller.auth;
 
-import javax.validation.Valid;
-
 import com.aifeng.ddrent.common.enums.auth.TokenAuthTypeEnum;
 import com.aifeng.ddrent.common.enums.auth.TokenTypeEnum;
+import com.aifeng.ddrent.common.enums.system.ErrorCodeEnum;
+import com.aifeng.ddrent.common.enums.user.OriginEnum;
+import com.aifeng.ddrent.common.enums.user.UserActiveEnum;
+import com.aifeng.ddrent.common.exception.auth.RequestFailedException;
 import com.aifeng.ddrent.common.model.auth.JwtToken;
+import com.aifeng.ddrent.common.model.response.BaseResult;
+import com.aifeng.ddrent.common.model.response.DataContainer;
+import com.aifeng.ddrent.core.common.utils.data.Md5Util;
+import com.aifeng.ddrent.core.dao.model.auth.UserDO;
 import com.aifeng.ddrent.core.dao.model.auth.UserTokenDO;
+import com.aifeng.ddrent.core.dao.model.captcha.CaptchaDO;
+import com.aifeng.ddrent.core.service.captcha.CaptchaService;
+import com.aifeng.ddrent.core.service.user.UserService;
 import com.aifeng.ddrent.core.service.user.UserTokenService;
+import com.aifeng.ddrent.web.controller.BaseController;
+import com.aifeng.ddrent.web.controller.auth.request.LoginRequest;
+import com.aifeng.ddrent.web.controller.auth.request.UserRegisterRquest;
+import com.aifeng.ddrent.web.controller.auth.request.WXRegisterReqeust;
+import com.aifeng.ddrent.web.controller.auth.response.UserLoginResponse;
 import com.aifeng.ddrent.web.controller.auth.response.WeixinLoginResponse;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.BeanUtils;
@@ -23,21 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aifeng.ddrent.common.enums.system.ErrorCodeEnum;
-import com.aifeng.ddrent.common.enums.user.OriginEnum;
-import com.aifeng.ddrent.common.enums.user.UserActiveEnum;
-import com.aifeng.ddrent.common.exception.auth.RequestFailedException;
-import com.aifeng.ddrent.common.model.response.BaseResult;
-import com.aifeng.ddrent.common.model.response.DataContainer;
-import com.aifeng.ddrent.core.dao.model.auth.UserDO;
-import com.aifeng.ddrent.core.dao.model.captcha.CaptchaDO;
-import com.aifeng.ddrent.core.service.captcha.CaptchaService;
-import com.aifeng.ddrent.core.service.user.UserService;
-import com.aifeng.ddrent.web.controller.BaseController;
-import com.aifeng.ddrent.web.controller.auth.request.LoginRequest;
-import com.aifeng.ddrent.web.controller.auth.request.UserRegisterRquest;
-import com.aifeng.ddrent.web.controller.auth.request.WXRegisterReqeust;
-import com.aifeng.ddrent.web.controller.auth.response.UserLoginResponse;
+import javax.validation.Valid;
 
 /** 
  * @ClassName: UserController 
@@ -62,7 +62,7 @@ public class UserController extends BaseController {
 	 * 前端要求密码需要用md5加密之后传到后台
 	 * @param params
 	 * @param bind
-	 * @return
+	 * @return	BaseResult
 	 */
 	@RequestMapping(value="login",method=RequestMethod.POST)
 	public BaseResult<UserLoginResponse> Login(@Valid LoginRequest params, BindingResult bind) {
@@ -75,7 +75,7 @@ public class UserController extends BaseController {
 		String loginId = params.getUsername();
 		UserDO user = userService.getByLoginAccount(loginId);
 		if(null != user) {
-			String password = Md5Crypt.md5Crypt(params.getPassword().getBytes());
+			String password = Md5Util.decode(params.getPassword().getBytes());
 			
 			//验证账户密码是否匹配
 			if(password.equals(user.getPassword())) {
@@ -103,7 +103,30 @@ public class UserController extends BaseController {
 		
 		return result;
 	}
-	
+
+	public static void main1(String[] args) {
+		String password = "123456";
+		assert Md5Crypt.md5Crypt(password.getBytes()).equals(Md5Crypt.md5Crypt(password.getBytes())): "同一时刻md5加密结果为 true \n";
+		System.out.format("同一时刻md5加密结果为 true \n");
+		String md5str1 = Md5Crypt.md5Crypt(password.getBytes());
+		String md5str2 = null;
+		try {
+			Thread.sleep(500);
+			md5str2 = Md5Crypt.md5Crypt(password.getBytes());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		if(md5str1.equals(md5str2)) {
+			System.out.format("不同时刻md5加密结果为 true \n两次结果分别为：\nmd5str1:\n%s\nmd5str2:\n%s\n", md5str1, md5str2);
+		}else{
+			System.out.format("不同时刻md5加密结果为 false \n两次结果分别为：\nmd5str1:\n%s\nmd5str2:\n%s\n", md5str1, md5str2);
+		}
+//		assert md5str1.equals(md5str2):"不同时刻md5加密结果为 false \n";
+//		System.out.format("加密后的结果 %s", Md5Crypt.md5Crypt(password.getBytes()));
+
+	}
+
 	@RequestMapping(value = "login/wx")
 	public BaseResult<WeixinLoginResponse> wxLogin(String code, String state) {
 		BaseResult<WeixinLoginResponse> result = new BaseResult<>();
@@ -141,7 +164,7 @@ public class UserController extends BaseController {
 				//设置注册源为网页
 				user.setOrigin(OriginEnum.WEB_REGISTER.name());
 				//设置加密密码
-				user.setPassword(Md5Crypt.md5Crypt(params.getPassword().getBytes()));
+				user.setPassword(Md5Util.decode(params.getPassword().getBytes()));
 				//设置用户已激活
 				user.setIsActive(UserActiveEnum.ACTIVE.ordinal());
 				

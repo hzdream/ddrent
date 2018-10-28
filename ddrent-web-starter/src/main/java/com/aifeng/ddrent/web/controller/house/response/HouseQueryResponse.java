@@ -1,27 +1,28 @@
 /**
  * Copyright © 2018 aifeng club All rights reserved.
  *
- * @Package: com.aifeng.ddrent.web.controller.house.request
+ * @Package: com.aifeng.ddrent.web.controller.house.response
  * @author imart·deng
- * @date 创建时间：2018/10/17 14:22
+ * @date 创建时间：2018/10/22 13:43
  * @version 1.0
  */
-package com.aifeng.ddrent.web.controller.house.request;
+package com.aifeng.ddrent.web.controller.house.response;
 
-import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 /**
- * @ClassName: HouseRequest
- * @Description: 房源添加请求
+ * @ClassName: HouseQueryResponse
+ * @Description: 房源查询返回
  * @author: imart·deng
- * @date: 2018/10/17 14:22 
+ * @date: 2018/10/22 13:43 
  *
  */
-public class HouseRequest {
+public class HouseQueryResponse {
+    private Long id;
+
     /**
      * 名称
      */
-    @NotBlank(message = "房间名称不能为空")
     private String name;
 
     /**
@@ -72,7 +73,6 @@ public class HouseRequest {
     /**
      * 出租类型，整租、转租、合租
      */
-    @NotBlank(message = "出租类型不能为空")
     private String rentType;
 
     /**
@@ -116,7 +116,7 @@ public class HouseRequest {
     private Integer creatorId;
 
     /**
-     * 创建人类型 ETENANT、AGENT、LANDLORD、SYSTEM_MANAGER、SYSTEM_AUTO
+     * 创建人类型ETENANT、AGENT、LANDLORD、SYSTEM_MANAGER、SYSTEM_AUTO
      */
     private String creatorType;
 
@@ -159,6 +159,18 @@ public class HouseRequest {
      * 发布、暂存
      */
     private Integer isRelease;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -382,5 +394,21 @@ public class HouseRequest {
 
     public void setIsRelease(Integer isRelease) {
         this.isRelease = isRelease;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -86,7 +86,7 @@ public class WebConfig implements WebMvcConfigurer {
 	 * @return
 	 */
 	@Bean
-	public FilterRegistrationBean authFilter(@Value("#{filter.exclude.pattrens}") String excludePatterns, @Autowired AuthRPCService authRPCService) {
+	public FilterRegistrationBean authFilter(@Value("${filter.exclude.pattrens}") String excludePatterns, @Autowired AuthRPCService authRPCService) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 
 		//添加过滤器
