@@ -50,13 +50,15 @@ public enum ErrorCodeEnum {
 	CAPTCHA_INVALID("120004", "验证码已失效"), 
 	CAPTCHA_FOBIDDEN("120005", "验证码发送被禁止"),
 	CAPTCHA_MISMATCH("120006", "验证码错误"), 
-	
+	CAPTCHA_IMAGE_CREATE_ERROR("120006", "图片校验码生成失败"),
+
 	//微信请求
 	WX_REQUEST_ERROR("130001", "微信请求失败"),
 
 	// 文件
 	FILE_UPLOAD_FAILDED("140001", "文件上传失败"),
-	
+
+
 	;	
 	
 	/** 错误编号*/

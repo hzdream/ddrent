@@ -25,6 +25,6 @@ import com.aifeng.ddrent.core.CoreConfig;
 @SpringBootTest(classes=CoreConfig.class)
 public class BaseTest {
 	
-	final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 }

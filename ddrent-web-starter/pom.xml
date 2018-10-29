@@ -17,11 +17,12 @@
   </properties>
   
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+		<scope>test</scope>
+	</dependency>
     
     <!-- framework stater -->
     <!-- <dependency>
@@ -45,13 +46,13 @@
 		<artifactId>ddrent-core</artifactId>
 		<version>${project.version}</version>
 	</dependency>
-	  <dependency>
-		  <groupId>junit</groupId>
-		  <artifactId>junit</artifactId>
-		  <version>4.12</version>
-		  <scope>test</scope>
-	  </dependency>
 
+	  <!-- captcha utils -->
+	  <dependency>
+		  <groupId>com.github.penggle</groupId>
+		  <artifactId>kaptcha</artifactId>
+		  <version>${penggle.version}</version>
+	  </dependency>
   </dependencies>
   
   <build>

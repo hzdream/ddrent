@@ -9,6 +9,7 @@ package com.aifeng.ddrent.web.controller.auth;
 
 import com.aifeng.ddrent.common.enums.auth.TokenAuthTypeEnum;
 import com.aifeng.ddrent.common.enums.auth.TokenTypeEnum;
+import com.aifeng.ddrent.common.enums.captcha.CaptchaEnum;
 import com.aifeng.ddrent.common.enums.system.ErrorCodeEnum;
 import com.aifeng.ddrent.common.enums.user.OriginEnum;
 import com.aifeng.ddrent.common.enums.user.UserActiveEnum;
@@ -16,6 +17,8 @@ import com.aifeng.ddrent.common.exception.auth.RequestFailedException;
 import com.aifeng.ddrent.common.model.auth.JwtToken;
 import com.aifeng.ddrent.common.model.response.BaseResult;
 import com.aifeng.ddrent.common.model.response.DataContainer;
+import com.aifeng.ddrent.common.util.data.GsonUtil;
+import com.aifeng.ddrent.common.util.data.id.SequenceGeneratorUtil;
 import com.aifeng.ddrent.core.common.utils.data.Md5Util;
 import com.aifeng.ddrent.core.dao.model.auth.UserDO;
 import com.aifeng.ddrent.core.dao.model.auth.UserTokenDO;
@@ -27,8 +30,10 @@ import com.aifeng.ddrent.web.controller.BaseController;
 import com.aifeng.ddrent.web.controller.auth.request.LoginRequest;
 import com.aifeng.ddrent.web.controller.auth.request.UserRegisterRquest;
 import com.aifeng.ddrent.web.controller.auth.request.WXRegisterReqeust;
+import com.aifeng.ddrent.web.controller.auth.response.CaptchaImageResponse;
 import com.aifeng.ddrent.web.controller.auth.response.UserLoginResponse;
 import com.aifeng.ddrent.web.controller.auth.response.WeixinLoginResponse;
+import com.google.code.kaptcha.Producer;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +42,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Base64;
 
 /** 
  * @ClassName: UserController 
@@ -56,7 +68,53 @@ public class UserController extends BaseController {
 	private CaptchaService captchaService;
 
 	@Autowired
+	private Producer captchaProducer;
+
+	@Autowired
 	private UserTokenService userTokenService;
+
+	@RequestMapping("/captcha")
+	public BaseResult<CaptchaImageResponse> createCaptchaImage() {
+		BaseResult<CaptchaImageResponse> result = new BaseResult<>();
+		// 生成验证码文本
+		String captchaText = captchaProducer.createText();
+
+		ByteArrayOutputStream out = null;
+		try {
+			CaptchaImageResponse response = new CaptchaImageResponse();
+			CaptchaDO captchaDO = new CaptchaDO();
+			Long id = SequenceGeneratorUtil.nextId();
+			captchaDO.setId(id);
+			// 设置返回id
+			response.setId(id);
+			// 验证码类型,把id作为接收方
+			captchaDO.setTo(id + "");
+			captchaDO.setIsActive(Boolean.TRUE);
+			captchaDO.setCaptcha(captchaText);
+			captchaDO.setBusiType(CaptchaEnum.USER_LOGIN.name());
+			captchaDO = captchaService.add(captchaDO);
+			// 生成校验码图片
+			BufferedImage bi = captchaProducer.createImage(captchaText);
+			out = new ByteArrayOutputStream();
+			ImageIO.write(bi, "jpg", out);
+			// 设置图片校验码
+			response.setImage("data:image/jpg;base64," + new String(Base64.getEncoder().encode(out.toByteArray())));
+
+			result.setCode(ErrorCodeEnum.SUCCESS).setData(new DataContainer<>(response));
+		} catch (IOException e) {
+			result.setCode(ErrorCodeEnum.CAPTCHA_IMAGE_CREATE_ERROR);
+			logger.error("[生成校验码图片] 失败, 失败原因{}", e.getMessage());
+		} finally {
+			if(null != out){
+				try {
+					out.close();
+				} catch (IOException e) {
+					logger.debug("[生成校验码图片] 关闭文件流失败, 失败原因{}", e.getMessage());
+				}
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * 前端要求密码需要用md5加密之后传到后台
@@ -67,10 +125,16 @@ public class UserController extends BaseController {
 	@RequestMapping(value="login",method=RequestMethod.POST)
 	public BaseResult<UserLoginResponse> Login(@Valid LoginRequest params, BindingResult bind) {
 		//参数校验
-		validte(bind);
+		validate(bind);
 		
 		BaseResult<UserLoginResponse> result = new BaseResult<>();
-		
+
+		// 判断校验码是否存在
+		BaseResult<CaptchaDO> captchaResult = captchaService.captchaCheck(params.getCaptchaId(), params.getCaptcha());
+		if(!captchaResult.isSuccess()){
+			return result.setCode(captchaResult);
+		}
+
 		//判断用户是否存在
 		String loginId = params.getUsername();
 		UserDO user = userService.getByLoginAccount(loginId);
@@ -145,7 +209,7 @@ public class UserController extends BaseController {
 	public Object register(UserRegisterRquest params, BindingResult bind) {
 		
 		//参数校验
-		validte(bind);
+		validate(bind);
 		
 		//返回结果
 		BaseResult<UserLoginResponse> result = new BaseResult<>();

@@ -57,7 +57,7 @@ public class FileContorller extends BaseController {
         List<MultipartFile> multipartFiles = ((MultipartHttpServletRequest) request) .getFiles("file");
 
         // 上传图片
-        List<String> path = MultipartFileUtil.uploadImagesByBatch(multipartFiles);
+        List<String> path = MultipartFileUtil.uploadImagesByBatch(multipartFiles, Boolean.TRUE);
 
         return null;
     }

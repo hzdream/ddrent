@@ -27,7 +27,7 @@ public class SysTradController extends BaseController {
         BaseResult<Long> result = new BaseResult<>();
 
         //参数校验
-        validte(bind);
+        validate(bind);
 
         TradingAreaDO record = new TradingAreaDO();
         BeanUtils.copyProperties(params, record);

@@ -24,6 +24,9 @@ public class SessionInfo implements Serializable {
 	/** 缓存名*/
 	public final static String SESSION_NAME = "_session_name";
 
+	/** 用户编号 */
+	private Long id;
+
 	/** 昵称 */
 	private String nickName;
 	
@@ -72,6 +75,14 @@ public class SessionInfo implements Serializable {
 
 	/** 当前角色列表信息 */
 	private String roles;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	/**
 	 * @return the nickName

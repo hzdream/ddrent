@@ -16,7 +16,6 @@ import com.aifeng.ddrent.web.controller.BaseController;
 import com.aifeng.ddrent.web.controller.house.request.HouseQueryRequest;
 import com.aifeng.ddrent.web.controller.house.request.HouseRequest;
 import com.aifeng.ddrent.web.controller.house.response.HouseQueryResponse;
-import com.aifeng.ddrent.web.controller.house.response.HouseResponse;
 import com.aifeng.ddrent.web.response.commons.SessionInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class houseController extends BaseController {
     @RequestMapping(value = "{roleCode}", method = RequestMethod.POST)
     public BaseResult<Long> add(@Valid @RequestBody HouseRequest params, @PathVariable Integer roleCode, BindingResult bind){
         //参数校验
-        validte(bind);
+        validate(bind);
 
         SessionInfo sessionInfo = getSessionInfo();
 //        sessionInfo.geti
@@ -73,7 +72,7 @@ public class houseController extends BaseController {
     @RequestMapping(value = "{roleCode}", method = RequestMethod.GET)
     public BaseResult<HouseQueryResponse> query(@Valid @RequestBody HouseQueryRequest params, BindingResult bind){
         //参数校验
-        validte(bind);
+        validate(bind);
 
         BaseResult<HouseQueryResponse> result = new BaseResult<>();
 

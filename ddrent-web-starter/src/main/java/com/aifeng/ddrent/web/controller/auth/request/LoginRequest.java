@@ -8,6 +8,7 @@
 package com.aifeng.ddrent.web.controller.auth.request;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /** 
@@ -32,8 +33,8 @@ public class LoginRequest {
 	private String captcha;
 	
 	/** 验证码编号 */
-	@NotBlank(message="没有找到匹配的验证码，请重新获取验证码")
-	private String captchaId;
+	@NotNull(message="没有找到匹配的验证码，请重新获取验证码")
+	private Long captchaId;
 
 	/**
 	 * @return the username
@@ -80,14 +81,14 @@ public class LoginRequest {
 	/**
 	 * @return the captchaId
 	 */
-	public String getCaptchaId() {
+	public Long getCaptchaId() {
 		return captchaId;
 	}
 
 	/**
 	 * @param captchaId the captchaId to set
 	 */
-	public void setCaptchaId(String captchaId) {
+	public void setCaptchaId(Long captchaId) {
 		this.captchaId = captchaId;
 	}
 	

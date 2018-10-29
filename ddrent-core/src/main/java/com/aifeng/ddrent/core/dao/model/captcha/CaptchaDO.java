@@ -73,7 +73,7 @@ public class CaptchaDO implements BaseDOI {
     private Integer captchaType;
     
     /**
-     * 延时
+     * 禁止时间
      */
     @Column(name = "DELAY_MINUTES")
     private Integer delayMinutes;
@@ -281,4 +281,22 @@ public class CaptchaDO implements BaseDOI {
 	public void setDelayMinutes(Integer delayMinutes) {
 		this.delayMinutes = delayMinutes;
 	}
+
+    @Override
+    public String toString() {
+        return "CaptchaDO{" +
+                "id=" + id +
+                ", to='" + to + '\'' +
+                ", captcha='" + captcha + '\'' +
+                ", isActive=" + isActive +
+                ", timesCheck=" + timesCheck +
+                ", busiType='" + busiType + '\'' +
+                ", extra='" + extra + '\'' +
+                ", createTime=" + createTime +
+                ", invalidTime=" + invalidTime +
+                ", updateTime=" + updateTime +
+                ", captchaType=" + captchaType +
+                ", delayMinutes=" + delayMinutes +
+                '}';
+    }
 }

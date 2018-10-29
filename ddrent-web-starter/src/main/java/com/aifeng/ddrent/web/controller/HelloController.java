@@ -68,7 +68,7 @@ public class HelloController extends BaseController {
 		
 		BaseResult<UserDO> result = new BaseResult<UserDO>();
 		//参数校验
-		validte(bind);
+		validate(bind);
 		
 		UserDO record = new UserDO();
 		

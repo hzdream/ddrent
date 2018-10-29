@@ -15,7 +15,8 @@ package com.aifeng.ddrent.common.enums.captcha;
  */
 public enum CaptchaEnum {
 
-	REGISTER(10, 6, 10, 30, "您正在注册滴滴租房用户，请妥善保管您的验证码[{}]"),
+	USER_LOGIN(10, 6, 30, "[%s]您正在登陆，请妥善保管您的验证码"),
+	REGISTER(10, 6, 30, "[%s]您正在注册滴滴租房用户，请妥善保管您的验证码"),
 	;
 
 	// 有效时间
@@ -24,10 +25,10 @@ public enum CaptchaEnum {
 	// 有效次数
 	private int checkTimes;
 	
-	// 业务类型
-	private int busiType;
+//	// 业务类型
+//	private int busiType;
 	
-	// 延时
+	// 禁止时间
 	private int delayMinute;
 	
 	// 短信格式
@@ -36,14 +37,13 @@ public enum CaptchaEnum {
 	/**
 	 * @param validMinute
 	 * @param checkTimes
-	 * @param busiType
 	 * @param delayMinute
 	 * @param format
 	 */
-	private CaptchaEnum(int validMinute, int checkTimes, int busiType, int delayMinute, String format) {
+	private CaptchaEnum(int validMinute, int checkTimes, int delayMinute, String format) {
 		this.validMinute = validMinute;
 		this.checkTimes = checkTimes;
-		this.busiType = busiType;
+//		this.busiType = busiType;
 		this.delayMinute = delayMinute;
 		this.format = format;
 	}
@@ -74,20 +74,6 @@ public enum CaptchaEnum {
 	 */
 	public void setCheckTimes(int checkTimes) {
 		this.checkTimes = checkTimes;
-	}
-
-	/**
-	 * @return the busiType
-	 */
-	public int getBusiType() {
-		return busiType;
-	}
-
-	/**
-	 * @param busiType the busiType to set
-	 */
-	public void setBusiType(int busiType) {
-		this.busiType = busiType;
 	}
 
 	/**

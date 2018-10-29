@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.aifeng.ddrent.common.enums.captcha.CaptchaEnum;
+import com.aifeng.ddrent.common.util.data.GsonUtil;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,7 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 					Calendar cal = Calendar.getInstance();
 					Date now = cal.getTime();
 					cal.setTime(updateTime);
+					// 禁止时间
 					cal.add(Calendar.MINUTE, captcha.getDelayMinutes());
 					if(now.before(cal.getTime())) {
 						result.setCode(ErrorCodeEnum.CAPTCHA_FOBIDDEN, "您被禁止发送验证码到"+ DateUtil.format(cal));
@@ -85,51 +88,13 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 					}
 				}
 			}
-			
-			//设置短信默认有效
-			if(null == record.getIsActive()) {
-				record.setIsActive(Boolean.TRUE);
-			}
-			
-			//设置默认创建时间
-			if(null == record.getCreateTime()) {
-				record.setCreateTime(new Date());
-			}
-			
-			//设置默认失效时间，10分钟之后
-			if(null == record.getInvalidTime()) {
-				Date createTime = record.getCreateTime();
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(createTime);
-				cal.add(Calendar.MINUTE, DEFAULT_VALID_TIME);
-				record.setInvalidTime(cal.getTime());
-			}
-			
-			//设置默认延时
-			if(null == record.getDelayMinutes() || record.getDelayMinutes() < 0) {
-				record.setDelayMinutes(DEFAULT_FORBIDDEN_MINUTES);
-			}
-			
-			//设置默认验证码
-			if(null == record.getCaptcha()) {
-				record.setCaptcha(RandomUtil.getRandomNum(DEFAULT_CAPTCHA_LENGTH));
-			}
-			
-			//设置默认可校验次数
-			if(null == record.getTimesCheck()) {
-				record.setTimesCheck(DEFAULT_CHECK_TIMES);
-			}
-			
+
+			// 设置默认值
+			setRecordDefaultValue(record);
+
 			// 失效所有同手机号，同类型的 有效验证码
-			Example updateExample = new Example(CaptchaDO.class);
-			updateExample.createCriteria()
-				.andEqualTo("to", record.getTo())
-				.andEqualTo("busiType", record.getBusiType())
-				.andEqualTo("isActive", Boolean.TRUE);
-			CaptchaDO updateRecord = new CaptchaDO();
-			updateRecord.setIsActive(Boolean.FALSE);
-			mapper.updateByExampleSelective(updateRecord, updateExample);
-			
+			invalidSameCaptcha(record.getTo(), record.getBusiType());
+
 			//captcha 入库
 			addSelective(record);
 			
@@ -148,7 +113,34 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 		
 		return result;
 	}
-	
+
+	/**
+	 * 添加验证码
+	 * @param record	需要添加的记录
+	 * @return	CaptchaDO 验证码记录
+	 */
+	@Override
+	public CaptchaDO add(CaptchaDO record) {
+
+		try {
+			// 参数校验
+			validateCaptcha(record);
+
+			// 设置默认值
+			setRecordDefaultValue(record);
+
+			// 失效所有同手机号，同类型的 有效验证码
+			invalidSameCaptcha(record.getTo(), record.getBusiType());
+
+			//captcha 入库
+			addSelective(record);
+			return record;
+		} catch(Exception e) {
+			logger.error("[添加校验码] 失败, 请求参数{}, 失败原因{}", GsonUtil.gson().toJson(record), e.getMessage());
+			throw e;
+		}
+	}
+
 	/**
 	 * 校验验证码，每校验一次，可校验次数减1
 	 * @param id		必填
@@ -163,9 +155,10 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 			CaptchaDO record = getById(id);
 			
 			if(null != record) {
-				
-				if(record.getIsActive()) {
-					
+				Date now = new Date();
+				Date invalidTime = record.getInvalidTime();
+				if(record.getIsActive() && now.before(invalidTime)) {
+
 					if(record.getCaptcha().equals(captcha)) {
 						//校验成功
 						result.setCode(ErrorCodeEnum.SUCCESS);
@@ -176,9 +169,13 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 					}
 					updateById(record);
 				}else {
+					if(!now.before(invalidTime)){
+						// 如果校验码超时置失效
+						record.setIsActive(Boolean.FALSE);
+						updateById(record);
+					}
 					result.setCode(ErrorCodeEnum.CAPTCHA_INVALID);
 				}
-				
 			}else {
 				result.setCode(ErrorCodeEnum.CAPTCHA_NOT_EXIST);
 			}
@@ -188,7 +185,6 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 		
 		return result;
 	}
-	
 
 	/**
 	 * 验证手机验证码请求是否有效
@@ -208,6 +204,86 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 		if(StringUtils.isBlank(record.getBusiType()))
 			throw new BusinessException(ErrorCodeEnum.CAPTCHA_BUSITYPE_INVALID);
 		
+	}
+
+	/**
+	 * 校验验证码是否有效
+	 * @param record
+	 */
+	private void validateCaptcha(CaptchaDO record){
+		if(null == record || StringUtils.isBlank(record.getTo()))
+			throw new BusinessException(ErrorCodeEnum.CAPTCHA_MOBILE_INVALID);
+		if(StringUtils.isBlank(record.getBusiType()))
+			throw new BusinessException(ErrorCodeEnum.CAPTCHA_BUSITYPE_INVALID);
+	}
+
+	/**
+	 * 设置默认值
+	 * @param record
+	 */
+	private void setRecordDefaultValue(CaptchaDO record) {
+		CaptchaEnum captchaEnum = CaptchaEnum.valueOf(record.getBusiType());
+		if(null != captchaEnum){
+			record.setTimesCheck(captchaEnum.getCheckTimes());
+			// 设置默认禁止时间
+			record.setDelayMinutes(captchaEnum.getDelayMinute());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MINUTE, captchaEnum.getValidMinute());
+			record.setInvalidTime(cal.getTime());
+		}
+
+		//设置默认有效
+		if(null == record.getIsActive()) {
+			record.setIsActive(Boolean.TRUE);
+		}
+
+		//设置默认创建时间
+		if(null == record.getCreateTime()) {
+			record.setCreateTime(new Date());
+		}
+
+		//设置默认失效时间，10分钟之后
+		if(null == record.getInvalidTime()) {
+			Date createTime = record.getCreateTime();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(createTime);
+			cal.add(Calendar.MINUTE, DEFAULT_VALID_TIME);
+			record.setInvalidTime(cal.getTime());
+		}
+
+		//设置默认延时
+		if(null == record.getDelayMinutes() || record.getDelayMinutes() < 0) {
+			record.setDelayMinutes(DEFAULT_FORBIDDEN_MINUTES);
+		}
+
+		//设置默认验证码
+		if(null == record.getCaptcha()) {
+			record.setCaptcha(RandomUtil.getRandomNum(DEFAULT_CAPTCHA_LENGTH));
+		}
+
+		//设置默认可校验次数
+		if(null == record.getTimesCheck()) {
+			record.setTimesCheck(DEFAULT_CHECK_TIMES);
+		}
+	}
+
+	/**
+	 * 失效所有同接收方,同类型验证码
+	 * @param to
+	 * @param busiType
+	 */
+	private void invalidSameCaptcha(String to, String busiType) {
+
+		if(StringUtils.isNotBlank(to)) return ;
+
+		Example updateExample = new Example(CaptchaDO.class);
+		updateExample.createCriteria()
+				.andEqualTo("to", to)
+				.andEqualTo("busiType", busiType)
+				.andEqualTo("isActive", Boolean.TRUE);
+		CaptchaDO updateRecord = new CaptchaDO();
+		updateRecord.setIsActive(Boolean.FALSE);
+		mapper.updateByExampleSelective(updateRecord, updateExample);
 	}
 
 }

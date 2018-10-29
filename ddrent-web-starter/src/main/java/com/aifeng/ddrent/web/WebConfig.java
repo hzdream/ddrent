@@ -7,13 +7,20 @@
  */
 package com.aifeng.ddrent.web;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
 import com.aifeng.ddrent.api.auth.AuthRPCService;
 import com.aifeng.ddrent.web.filter.AuthenticationFilter;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +33,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.google.code.kaptcha.util.Config;
 
 /** 
  * @ClassName: Webconfig
@@ -100,7 +109,61 @@ public class WebConfig implements WebMvcConfigurer {
 
 		return registration;
 	}
-	
+
+	/** kaptcha 样式配置 */
+	@Bean
+	public Config kaptchaConfig() {
+		Properties prop = new Properties();
+		prop.setProperty("kaptcha.border", "no");
+		prop.setProperty("kaptcha.border.color", "105,179,90");
+		prop.setProperty("kaptcha.textproducer.font.color", "0,0,255");
+		prop.setProperty("kaptcha.textproducer.font.color", "black");
+		prop.setProperty("kaptcha.image.width", "80");
+		prop.setProperty("kaptcha.textproducer.font.size", "24");
+		prop.setProperty("kaptcha.image.height", "30");
+		prop.setProperty("kaptcha.session.key", "code");
+		prop.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.NoNoise");
+		prop.setProperty("kaptcha.textproducer.char.string", "ade3457hkn");
+		prop.setProperty("kaptcha.textproducer.char.length", "4");
+		prop.setProperty("kaptcha.textproducer.char.space", "6");
+		prop.setProperty("kaptcha.textproducer.font.names", "宋体,楷体,微软雅黑");
+		//阴影样式
+		prop.setProperty("kaptcha.obscurificator.impl", "com.google.code.kaptcha.impl.ShadowGimpy");
+
+		Config config = new Config(prop);
+
+		return config;
+	}
+
+	/**
+	 * Kaptcha 		工具
+	 * @return		DefaultKaptcha
+	 */
+	@Bean
+	public DefaultKaptcha defaultKaptcha() {
+		DefaultKaptcha kaptcha = new DefaultKaptcha();
+
+		kaptcha.setConfig(kaptchaConfig());
+
+		return kaptcha;
+	}
+
+//	public static void main(String[] args) throws IOException {
+//		DefaultKaptcha captchaProducer = defaultKaptcha();
+//
+//		// 生成验证码文本
+//		String captchaText = captchaProducer.createText();
+//
+//		// 生成校验码图片
+//		BufferedImage bi = captchaProducer.createImage(captchaText);
+//		ByteArrayOutputStream out = new ByteArrayOutputStream();
+//		ImageIO.write(bi, "png", out);
+//		// 设置图片校验码
+//		String b64 = "data:image/png;base64," + new String(Base64.getEncoder().encode(out.toByteArray()));
+//
+//		System.out.println(b64);
+//	}
+
 //	@Bean
 //	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
 //		return new Jackson2ObjectMapperBuilderCustomizer() {

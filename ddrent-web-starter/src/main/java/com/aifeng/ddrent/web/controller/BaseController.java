@@ -400,7 +400,7 @@ public class BaseController {
 		return (SessionInfo) sessionStatusManager.get(accessToken).getData();
 	}
 	
-	protected void validte(BindingResult bdResult) throws RequestFailedException {
+	protected void validate(BindingResult bdResult) throws RequestFailedException {
 		for (ObjectError error : bdResult.getAllErrors()) {
 			throw new RequestFailedException(ErrorCodeEnum.PARAMS_ERROR, error.getDefaultMessage());
 		}
