@@ -145,9 +145,10 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 	 * 校验验证码，每校验一次，可校验次数减1
 	 * @param id		必填
 	 * @param captcha	必填
+	 * @param captchaTypes 选填，标志校验码类型
 	 * @return 
 	 */
-	public BaseResult<CaptchaDO> captchaCheck(Long id, String captcha){ 
+	public BaseResult<CaptchaDO> captchaCheck(Long id, String captcha, CaptchaEnum... captchaTypes){
 		BaseResult<CaptchaDO> result = new BaseResult<>();
 		
 		if(null != id && StringUtils.isNotBlank(captcha)) {
@@ -155,6 +156,19 @@ public class CaptchaService extends BaseService<CaptchaDO, CaptchaMapper> {
 			CaptchaDO record = getById(id);
 			
 			if(null != record) {
+
+				// 匹配校验码业务类型
+				if(captchaTypes.length > 0){
+					boolean match = false;
+					for (CaptchaEnum captchaType: captchaTypes) {
+						if(captchaType.name().equals(record.getBusiType())) {
+							match =true;
+							break;
+						}
+					}
+					if(!match) return result.setCode(ErrorCodeEnum.CAPTCHA_NOT_EXIST);
+				}
+
 				Date now = new Date();
 				Date invalidTime = record.getInvalidTime();
 				if(record.getIsActive() && now.before(invalidTime)) {

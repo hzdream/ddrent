@@ -29,7 +29,7 @@ public class LoginRequest {
 	
 	/** 验证码  */
 	@NotBlank(message="验证码不能为空")
-	@Size(min=6, max=6, message="验证码不正确")
+	@Size(min=4, max=10, message="验证码不正确")
 	private String captcha;
 	
 	/** 验证码编号 */

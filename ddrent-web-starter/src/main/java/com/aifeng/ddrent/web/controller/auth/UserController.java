@@ -7,6 +7,7 @@
  */
 package com.aifeng.ddrent.web.controller.auth;
 
+import com.aifeng.ddrent.common.constant.session.SessionConstant;
 import com.aifeng.ddrent.common.enums.auth.TokenAuthTypeEnum;
 import com.aifeng.ddrent.common.enums.auth.TokenTypeEnum;
 import com.aifeng.ddrent.common.enums.captcha.CaptchaEnum;
@@ -29,10 +30,11 @@ import com.aifeng.ddrent.core.service.user.UserTokenService;
 import com.aifeng.ddrent.web.controller.BaseController;
 import com.aifeng.ddrent.web.controller.auth.request.LoginRequest;
 import com.aifeng.ddrent.web.controller.auth.request.UserRegisterRquest;
-import com.aifeng.ddrent.web.controller.auth.request.WXRegisterReqeust;
+import com.aifeng.ddrent.web.controller.auth.request.WXRegisterRequest;
 import com.aifeng.ddrent.web.controller.auth.response.CaptchaImageResponse;
 import com.aifeng.ddrent.web.controller.auth.response.UserLoginResponse;
 import com.aifeng.ddrent.web.controller.auth.response.WeixinLoginResponse;
+import com.aifeng.ddrent.web.response.commons.SessionInfo;
 import com.google.code.kaptcha.Producer;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.BeanUtils;
@@ -43,13 +45,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Base64;
+import java.util.Objects;
 
 /** 
  * @ClassName: UserController 
@@ -73,7 +77,11 @@ public class UserController extends BaseController {
 	@Autowired
 	private UserTokenService userTokenService;
 
-	@RequestMapping("/captcha")
+	/**
+	 *
+	 * @return
+	 */
+	@RequestMapping("/login/captcha")
 	public BaseResult<CaptchaImageResponse> createCaptchaImage() {
 		BaseResult<CaptchaImageResponse> result = new BaseResult<>();
 		// 生成验证码文本
@@ -130,7 +138,7 @@ public class UserController extends BaseController {
 		BaseResult<UserLoginResponse> result = new BaseResult<>();
 
 		// 判断校验码是否存在
-		BaseResult<CaptchaDO> captchaResult = captchaService.captchaCheck(params.getCaptchaId(), params.getCaptcha());
+		BaseResult<CaptchaDO> captchaResult = captchaService.captchaCheck(params.getCaptchaId(), params.getCaptcha(), CaptchaEnum.USER_LOGIN);
 		if(!captchaResult.isSuccess()){
 			return result.setCode(captchaResult);
 		}
@@ -139,6 +147,11 @@ public class UserController extends BaseController {
 		String loginId = params.getUsername();
 		UserDO user = userService.getByLoginAccount(loginId);
 		if(null != user) {
+			// 用户被禁用
+			if(Objects.equals(UserActiveEnum.FORBIDDEN.ordinal(), user.getIsActive())){
+				return result.setCode(ErrorCodeEnum.USER_FORBIDDEN);
+			}
+
 			String password = Md5Util.decode(params.getPassword().getBytes());
 			
 			//验证账户密码是否匹配
@@ -168,35 +181,12 @@ public class UserController extends BaseController {
 		return result;
 	}
 
-	public static void main1(String[] args) {
-		String password = "123456";
-		assert Md5Crypt.md5Crypt(password.getBytes()).equals(Md5Crypt.md5Crypt(password.getBytes())): "同一时刻md5加密结果为 true \n";
-		System.out.format("同一时刻md5加密结果为 true \n");
-		String md5str1 = Md5Crypt.md5Crypt(password.getBytes());
-		String md5str2 = null;
-		try {
-			Thread.sleep(500);
-			md5str2 = Md5Crypt.md5Crypt(password.getBytes());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		if(md5str1.equals(md5str2)) {
-			System.out.format("不同时刻md5加密结果为 true \n两次结果分别为：\nmd5str1:\n%s\nmd5str2:\n%s\n", md5str1, md5str2);
-		}else{
-			System.out.format("不同时刻md5加密结果为 false \n两次结果分别为：\nmd5str1:\n%s\nmd5str2:\n%s\n", md5str1, md5str2);
-		}
-//		assert md5str1.equals(md5str2):"不同时刻md5加密结果为 false \n";
-//		System.out.format("加密后的结果 %s", Md5Crypt.md5Crypt(password.getBytes()));
-
-	}
-
 	@RequestMapping(value = "login/wx")
 	public BaseResult<WeixinLoginResponse> wxLogin(String code, String state) {
 		BaseResult<WeixinLoginResponse> result = new BaseResult<>();
 		BaseResult<UserTokenDO> tokenResult = userTokenService.addUserTokenByWeixinCode(code);
 		WeixinLoginResponse response = new WeixinLoginResponse();
-		if(tokenResult.isSuccess()) return result.setCode(tokenResult);
+		if(!tokenResult.isSuccess()) return result.setCode(tokenResult);
 
 		UserTokenDO userTokenDO = tokenResult.getData().getObj();
 
@@ -253,12 +243,43 @@ public class UserController extends BaseController {
 	}
 	
 	@RequestMapping(value="register/wx",method=RequestMethod.POST)
-	public BaseResult<Object> registerWx(WXRegisterReqeust request){
-		//TODO 判断该用户是否已经注册
-		
-		//TODO 用户未注册则获取注册微信登录用户并置为激活状态
-		
+	public BaseResult<Boolean> registerWx(WXRegisterRequest params, BindingResult bind){
+		BaseResult<Boolean> result = new BaseResult<>();
+		//参数校验
+		validate(bind);
+
+		// 获取用户session信息
+		SessionInfo sessionInfo = getSessionInfo();
+
+		// 用户被禁用
+		if(Objects.equals(UserActiveEnum.FORBIDDEN.ordinal(), sessionInfo.getIsActive())){
+			return result.setCode(ErrorCodeEnum.USER_FORBIDDEN);
+		}
+
+		// 用户已经注册
+		if(Objects.equals(UserActiveEnum.ACTIVE.ordinal(), sessionInfo.getIsActive())){
+			return result.setCode(ErrorCodeEnum.USER_ACTIVATED);
+		}
+
+		// 更新用户数据
+		UserDO userDO = new UserDO();
+		BeanUtils.copyProperties(params, userDO);
+		userDO.setId(sessionInfo.getId());
+		userService.updateByIdSelective(userDO);
+
+		return result.setCode(ErrorCodeEnum.SUCCESS);
+	}
+
+	/**
+	 * 获取token
+	 * @param request
+	 * @return
+	 */
+	private String getToken(ServletRequest request){
+		Cookie[] cookies = ((HttpServletRequest) request).getCookies();
+		for (Cookie cookie: cookies) {
+			if(SessionConstant.ACCESS_TOKEN.equals(cookie.getName())) return cookie.getValue();
+		}
 		return null;
 	}
-	
 }

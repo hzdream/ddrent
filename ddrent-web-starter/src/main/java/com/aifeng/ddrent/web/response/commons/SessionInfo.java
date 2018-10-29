@@ -71,7 +71,7 @@ public class SessionInfo implements Serializable {
 	private Integer sex;
 	
 	/** 登陆时间 */
-	private Date loginedTime;
+	private Date loginTime;
 
 	/** 当前角色列表信息 */
 	private String roles;
@@ -137,15 +137,15 @@ public class SessionInfo implements Serializable {
 	/**
 	 * @return the loginedTime
 	 */
-	public Date getLoginedTime() {
-		return loginedTime;
+	public Date getLoginTime() {
+		return loginTime;
 	}
 
 	/**
-	 * @param loginedTime the loginedTime to set
+	 * @param loginTime the loginedTime to set
 	 */
-	public void setLoginedTime(Date loginedTime) {
-		this.loginedTime = loginedTime;
+	public void setLoginTime(Date loginTime) {
+		this.loginTime = loginTime;
 	}
 
 	public String getRoles() {

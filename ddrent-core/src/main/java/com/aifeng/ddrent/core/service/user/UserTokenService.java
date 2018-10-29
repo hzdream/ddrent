@@ -185,7 +185,7 @@ public class UserTokenService extends BaseService<UserTokenDO, UserTokenMapper> 
 		BaseResult<UserTokenDO> result = new BaseResult<>();
 		
 		//校验参数准确性
-		if(null != code) {
+		if(null == code) {
 			result.setCode(ErrorCodeEnum.PARAMS_ERROR);
 			return result;
 		}

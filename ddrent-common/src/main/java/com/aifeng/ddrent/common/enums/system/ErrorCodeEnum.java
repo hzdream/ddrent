@@ -42,7 +42,9 @@ public enum ErrorCodeEnum {
 	USER_NOT_EXIST("110001", "用户不存在"), 
 	USER_PASSWORD_MISMATCH("110002", "用户密码不匹配"),
 	USER_ACCOUNT_EXIST("110003", "登录名已经存在"), 
-	
+	USER_ACTIVATED("110004", "用户已经注册过了"),
+	USER_FORBIDDEN("110005", "用户已被禁用"),
+
 	//验证码问题
 	CAPTCHA_MOBILE_INVALID("120001", "手机号码无效"), 
 	CAPTCHA_BUSITYPE_INVALID("120002", "校验码类型无效"), 

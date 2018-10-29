@@ -100,7 +100,7 @@ public class AuthenticationFilter implements Filter {
             BeanUtils.copyProperties(userAuthInfoDTO.getUserInfoDTO(), sessionInfo);
 
             // 缓存授权信息
-            sessionInfo.setLoginedTime(userTokenInfoDTO.getCreateTime());
+            sessionInfo.setLoginTime(userTokenInfoDTO.getCreateTime());
             sessionInfo.setRoles(userTokenInfoDTO.getUserRoles());
 
             sessionStatusManager.add(SequenceGeneratorUtil.nextId()+"", new Date(), accessToken, sessionInfo);
