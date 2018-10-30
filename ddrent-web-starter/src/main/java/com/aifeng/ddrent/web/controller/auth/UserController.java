@@ -196,16 +196,16 @@ public class UserController extends BaseController {
 	}
 	
 	@RequestMapping(value="register",method=RequestMethod.POST)
-	public Object register(UserRegisterRquest params, BindingResult bind) {
+	public BaseResult<UserLoginResponse> register(UserRegisterRquest params, BindingResult bind) {
 		
 		//参数校验
-		validate(bind);
+//		validate(bind);
 		
 		//返回结果
 		BaseResult<UserLoginResponse> result = new BaseResult<>();
 		
 		//判断验证码是否匹配
-		BaseResult<CaptchaDO> smsResult = captchaService.captchaCheck(params.getCaptchaId(), params.getCaptcha());
+		BaseResult<CaptchaDO> smsResult = captchaService.captchaCheck(params.getCaptchaId(), params.getCaptcha(), CaptchaEnum.REGISTER);
 		
 		if(smsResult.isSuccess()) {
 			//判断登陆账号是否使用

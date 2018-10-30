@@ -7,8 +7,11 @@
  */
 package org.ddrent.web.user;
 
+import com.aifeng.ddrent.common.enums.system.ErrorCodeEnum;
+import com.aifeng.ddrent.common.exception.auth.RequestFailedException;
 import com.aifeng.ddrent.web.controller.auth.UserController;
 import com.aifeng.ddrent.web.controller.auth.request.UserRegisterRquest;
+import com.aifeng.ddrent.web.controller.auth.response.UserLoginResponse;
 import com.aifeng.ddrent.web.controller.auth.response.WeixinLoginResponse;
 import org.ddrent.web.BaseTest;
 import org.junit.Test;
@@ -21,6 +24,8 @@ import com.aifeng.ddrent.core.dao.model.auth.UserDO;
 import com.aifeng.ddrent.core.service.user.UserService;
 import com.aifeng.ddrent.web.DdrentApplication;
 import com.aifeng.ddrent.web.WebConfig;
+
+import javax.validation.Validator;
 
 /** 
  * @ClassName: UserTest 
@@ -37,6 +42,10 @@ public class UserTest extends BaseTest {
 
 	@Autowired
 	private UserController userController;
+
+	//校验参数
+	@Autowired
+	Validator validator;
 
 	@Test
 	public void testFind() {
@@ -62,17 +71,26 @@ public class UserTest extends BaseTest {
 		System.out.println(GsonUtil.gson().toJson(result));
 	}
 
+	@Test
 	public void register(){
-		UserRegisterRquest registerRquest = new UserRegisterRquest();
+		UserRegisterRquest registerRequest = new UserRegisterRquest();
 
-		registerRquest.setCaptcha("");
-		registerRquest.setCaptchaId(1L);
-		registerRquest.setContactProtect(Boolean.TRUE);
-		registerRquest.setHeadImgUrl("https://wx.images.head/AJSD23329FKSD");
-		registerRquest.setIntroduce("接口测试");
-		registerRquest.setNickName("马先森");
-		registerRquest.setPhoneNum("15669960039");
-		registerRquest.setLoginAccount("mart");
-		registerRquest.setPassword("123abc");
+		registerRequest.setCaptcha("5ndd");
+		registerRequest.setCaptchaId(6462713797487856467L);
+		registerRequest.setContactProtect(Boolean.TRUE);
+		registerRequest.setHeadImgUrl("https://wx.images.head/AJSD23329FKSD");
+		registerRequest.setIntroduce("接口测试");
+		registerRequest.setNickName("马先森");
+		registerRequest.setPhoneNum("15669960039");
+		registerRequest.setLoginAccount("mart");
+		registerRequest.setPassword("123abc");
+
+//		validator.validate(registerRequest).forEach(violation -> {
+//			throw new RequestFailedException(ErrorCodeEnum.PARAMS_ERROR);
+//		});
+
+		BaseResult<UserLoginResponse> result = userController.register(registerRequest, null);
+
+		System.out.println(GsonUtil.gson().toJson(result));
 	}
 }
